@@ -86,6 +86,9 @@ class ProductTable extends TableAbstract
 
                 return $price;
             })
+            ->editColumn('quantity', function ($item) {
+                return $item->with_storehouse_management ? $item->quantity : '&#8734;';
+            })
             ->editColumn('sku', function ($item) {
                 return $item->sku ? $item->sku : '&mdash;';
             })
@@ -126,6 +129,8 @@ class ProductTable extends TableAbstract
             'ec_products.sale_type',
             'ec_products.start_date',
             'ec_products.end_date',
+            'ec_products.quantity',
+            'ec_products.with_storehouse_management',
         ];
 
         $query = $model
@@ -168,6 +173,11 @@ class ProductTable extends TableAbstract
             'price'        => [
                 'name'  => 'ec_products.price',
                 'title' => trans('plugins/ecommerce::products.price'),
+                'class' => 'text-left',
+            ],
+            'quantity'        => [
+                'name'  => 'ec_products.quantity',
+                'title' => trans('plugins/ecommerce::products.quantity'),
                 'class' => 'text-left',
             ],
             'sku'        => [

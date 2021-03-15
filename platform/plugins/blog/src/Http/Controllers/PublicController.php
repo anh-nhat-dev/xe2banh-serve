@@ -53,7 +53,7 @@ class PublicController extends Controller
         $data = $blogService->handleFrontRoutes($slug);
 
         if (isset($data['slug']) && $data['slug'] !== $slug->key) {
-            return redirect()->to(url(SlugHelper::getPrefix(Tag::class) . '/' . $data['slug']));
+            return redirect()->to(route('public.single', SlugHelper::getPrefix(Tag::class) . '/' . $data['slug']));
         }
 
         return Theme::scope($data['view'], $data['data'], $data['default_view'])
@@ -76,7 +76,7 @@ class PublicController extends Controller
         $data = $blogService->handleFrontRoutes($slug);
 
         if (isset($data['slug']) && $data['slug'] !== $slug->key) {
-            return redirect()->to(url(SlugHelper::getPrefix(Post::class) . '/' . $data['slug']));
+            return redirect()->to(route('public.single', SlugHelper::getPrefix(Post::class) . '/' . $data['slug']));
         }
 
         return Theme::scope($data['view'], $data['data'], $data['default_view'])
@@ -99,7 +99,7 @@ class PublicController extends Controller
         $data = $blogService->handleFrontRoutes($slug);
 
         if (isset($data['slug']) && $data['slug'] !== $slug->key) {
-            return redirect()->to(url(SlugHelper::getPrefix(Category::class) . '/' . $data['slug']));
+            return redirect()->to(route('public.single', SlugHelper::getPrefix(Category::class) . '/' . $data['slug']));
         }
 
         return Theme::scope($data['view'], $data['data'], $data['default_view'])

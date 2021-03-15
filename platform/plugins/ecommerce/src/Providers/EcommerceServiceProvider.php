@@ -571,7 +571,7 @@ class EcommerceServiceProvider extends ServiceProvider
             $coupon = session('applied_coupon_code');
             if ($coupon) {
                 $this->app->make(HandleRemoveCouponService::class)->execute();
-                if ($cart->count()) {
+                if (Cart::count() || ($cart instanceof \Botble\Ecommerce\Cart\Cart && $cart->count())) {
                     $this->app->make(HandleApplyCouponService::class)->execute($coupon);
                 }
             }

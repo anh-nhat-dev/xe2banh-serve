@@ -63,6 +63,7 @@ class RenderingSiteMapListener
         $products = $this->productRepository->getModel()
             ->with('slugable')
             ->where('status', BaseStatusEnum::PUBLISHED)
+            ->where('is_variation', 0)
             ->orderBy('created_at', 'desc')
             ->get();
 

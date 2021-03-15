@@ -27,7 +27,9 @@ class LoginController extends Controller
     |
     */
 
-    use AuthenticatesUsers, LogoutGuardTrait;
+    use AuthenticatesUsers, LogoutGuardTrait {
+        AuthenticatesUsers::attemptLogin as baseAttemptLogin;
+    }
 
     /**
      * Where to redirect users after login / registration.
@@ -128,5 +130,33 @@ class LoginController extends Controller
         }
 
         return $this->loggedOut($request) ?: redirect('/');
+    }
+
+    /**
+     * Attempt to log the user into the application.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return bool
+     * @throws ValidationException
+     */
+    protected function attemptLogin(Request $request)
+    {
+        if ($this->guard()->validate($this->credentials($request))) {
+            $customer = $this->guard()->getLastAttempted();
+
+            if (get_ecommerce_setting('verify_customer_email', 0) && empty($customer->confirmed_at)) {
+                throw ValidationException::withMessages([
+                    'confirmation' => [
+                        __('The given email address has not been confirmed. <a href=":resend_link">Resend confirmation link.</a>', [
+                            'resend_link' => route('customer.resend_confirmation', ['email' => $customer->email]),
+                        ]),
+                    ],
+                ]);
+            }
+
+            return $this->baseAttemptLogin($request);
+        }
+
+        return false;
     }
 }

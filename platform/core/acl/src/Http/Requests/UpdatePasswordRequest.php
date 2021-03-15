@@ -2,8 +2,8 @@
 
 namespace Botble\ACL\Http\Requests;
 
-use Illuminate\Support\Facades\Auth;
 use Botble\Support\Http\Requests\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UpdatePasswordRequest extends Request
 {
@@ -20,7 +20,7 @@ class UpdatePasswordRequest extends Request
             'password_confirmation' => 'same:password',
         ];
 
-        if (Auth::user()->isSuperUser()) {
+        if (Auth::user() && Auth::user()->isSuperUser()) {
             return $rules;
         }
 

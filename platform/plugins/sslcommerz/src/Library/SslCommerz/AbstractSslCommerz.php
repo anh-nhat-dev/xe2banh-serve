@@ -4,12 +4,23 @@ namespace Botble\SslCommerz\Library\SslCommerz;
 
 abstract class AbstractSslCommerz implements SslCommerzInterface
 {
+    /**
+     * @var string
+     */
     protected $apiUrl;
+
+    /**
+     * @var string
+     */
     protected $storeId;
+
+    /**
+     * @var string
+     */
     protected $storePassword;
 
     /**
-     * @param $data
+     * @param array $data
      * @param array $header
      * @param bool $setLocalhost
      * @return bool|string
@@ -80,7 +91,7 @@ abstract class AbstractSslCommerz implements SslCommerzInterface
             return $sslcz;
         }
 
-        if (isset($sslcz['GatewayPageURL']) && $sslcz['GatewayPageURL'] != "") {
+        if (isset($sslcz['GatewayPageURL']) && $sslcz['GatewayPageURL'] != '') {
             // this is important to show the popup, return or echo to send json response back
             if ($this->getApiUrl() != null && $this->getApiUrl() == 'https://securepay.sslcommerz.com') {
                 $response = json_encode([
@@ -107,7 +118,7 @@ abstract class AbstractSslCommerz implements SslCommerzInterface
     }
 
     /**
-     * @param $url
+     * @param string $url
      * @param bool $permanent
      */
     public function redirect($url, $permanent = false)
@@ -117,21 +128,33 @@ abstract class AbstractSslCommerz implements SslCommerzInterface
         exit();
     }
 
+    /**
+     * @return string
+     */
     protected function getStoreId()
     {
         return $this->storeId;
     }
 
+    /**
+     * @param string $storeID
+     */
     protected function setStoreId($storeID)
     {
         $this->storeId = $storeID;
     }
 
+    /**
+     * @return string
+     */
     protected function getStorePassword()
     {
         return $this->storePassword;
     }
 
+    /**
+     * @param string $storePassword
+     */
     protected function setStorePassword($storePassword)
     {
         $this->storePassword = $storePassword;

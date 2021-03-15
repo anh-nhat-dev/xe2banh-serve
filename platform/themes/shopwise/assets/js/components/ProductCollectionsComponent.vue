@@ -71,7 +71,7 @@
                 this.isLoading = true;
                 axios.get(this.url + '?collection_id=' + productCollection.id)
                     .then(res => {
-                        this.data = res.data.data;
+                        this.data = res.data.data ? res.data.data : [];
                         this.isLoading = false;
                     })
                     .catch(res => {

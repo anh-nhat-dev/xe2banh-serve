@@ -11,6 +11,7 @@ use Botble\Theme\Commands\ThemeRemoveCommand;
 use Botble\Theme\Contracts\Theme as ThemeContract;
 use Botble\Theme\Http\Middleware\AdminBarMiddleware;
 use Botble\Theme\Theme;
+use Botble\Theme\Commands\ThemeRenameCommand;
 use Event;
 use File;
 use Illuminate\Routing\Events\RouteMatched;
@@ -39,6 +40,7 @@ class ThemeServiceProvider extends ServiceProvider
             ThemeRemoveCommand::class,
             ThemeAssetsPublishCommand::class,
             ThemeAssetsRemoveCommand::class,
+            ThemeRenameCommand::class,
         ]);
     }
 

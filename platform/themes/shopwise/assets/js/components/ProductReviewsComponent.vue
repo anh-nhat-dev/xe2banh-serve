@@ -75,7 +75,7 @@
                 this.isLoading = true;
                 axios.get(this.url + '?page=' + page)
                     .then(res => {
-                        this.data = res.data.data;
+                        this.data = res.data.data ? res.data.data : [];
                         this.meta = res.data.meta;
                         this.isLoading = false;
                     })

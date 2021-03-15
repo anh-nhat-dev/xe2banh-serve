@@ -4,12 +4,17 @@ namespace Botble\Ecommerce\Providers;
 
 use Assets;
 use Botble\Base\Enums\BaseStatusEnum;
+use Botble\Blog\Repositories\Interfaces\PostInterface;
 use Botble\Dashboard\Supports\DashboardWidgetInstance;
 use Botble\Ecommerce\Models\Brand;
 use Botble\Ecommerce\Models\ProductCategory;
+use Botble\Ecommerce\Repositories\Interfaces\CustomerInterface;
 use Botble\Ecommerce\Repositories\Interfaces\OrderInterface;
+use Botble\Ecommerce\Repositories\Interfaces\ProductInterface;
+use Botble\Ecommerce\Repositories\Interfaces\ReviewInterface;
 use Html;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
@@ -40,6 +45,79 @@ class HookServiceProvider extends ServiceProvider
 
         add_filter(BASE_FILTER_TOP_HEADER_LAYOUT, [$this, 'registerTopHeaderNotification'], 121);
         add_filter(BASE_FILTER_APPEND_MENU_NAME, [$this, 'getPendingOrders'], 130, 2);
+
+        app()->booted(function () {
+            add_filter(DASHBOARD_FILTER_ADMIN_LIST, function ($widgets) {
+                foreach ($widgets as $key => $widget) {
+                    if (in_array($key, [
+                            'widget_total_themes',
+                            'widget_total_users',
+                            'widget_total_plugins',
+                            'widget_total_pages',
+                        ]) && $widget['type'] == 'stats') {
+                        Arr::forget($widgets, $key);
+                    }
+                }
+
+                return $widgets;
+            }, 150);
+
+            add_filter(DASHBOARD_FILTER_ADMIN_LIST, function ($widgets, $widgetSettings) {
+                $items = app(OrderInterface::class)->count(['ec_orders.is_finished' => 1]);
+                return (new DashboardWidgetInstance)
+                    ->setType('stats')
+                    ->setPermission('orders.index')
+                    ->setTitle(trans('plugins/ecommerce::order.name'))
+                    ->setKey('widget_total_1')
+                    ->setIcon('fas fa-users')
+                    ->setColor('#32c5d2')
+                    ->setStatsTotal($items)
+                    ->setRoute(route('orders.index'))
+                    ->init($widgets, $widgetSettings);
+            }, 2, 2);
+
+            add_filter(DASHBOARD_FILTER_ADMIN_LIST, function ($widgets, $widgetSettings) {
+                $items = app(ProductInterface::class)->count(['status' => BaseStatusEnum::PUBLISHED, 'is_variation' => 0]);
+                return (new DashboardWidgetInstance)
+                    ->setType('stats')
+                    ->setPermission('products.index')
+                    ->setTitle(trans('plugins/ecommerce::products.name'))
+                    ->setKey('widget_total_2')
+                    ->setIcon('far fa-file-alt')
+                    ->setColor('#1280f5')
+                    ->setStatsTotal($items)
+                    ->setRoute(route('products.index'))
+                    ->init($widgets, $widgetSettings);
+            }, 3, 2);
+
+            add_filter(DASHBOARD_FILTER_ADMIN_LIST, function ($widgets, $widgetSettings) {
+                $items = app(CustomerInterface::class)->count();
+                return (new DashboardWidgetInstance)
+                    ->setType('stats')
+                    ->setPermission('customer.index')
+                    ->setTitle(trans('plugins/ecommerce::customer.name'))
+                    ->setKey('widget_total_3')
+                    ->setIcon('fas fa-users')
+                    ->setColor('#75b6f9')
+                    ->setStatsTotal($items)
+                    ->setRoute(route('customer.index'))
+                    ->init($widgets, $widgetSettings);
+            }, 4, 2);
+
+            add_filter(DASHBOARD_FILTER_ADMIN_LIST, function ($widgets, $widgetSettings) {
+                $items = app(ReviewInterface::class)->count(['status' => BaseStatusEnum::PUBLISHED]);
+                return (new DashboardWidgetInstance)
+                    ->setType('stats')
+                    ->setPermission('reviews.index')
+                    ->setTitle(trans('plugins/ecommerce::review.name'))
+                    ->setKey('widget_total_4')
+                    ->setIcon('far fa-file-alt')
+                    ->setColor('#074f9d')
+                    ->setStatsTotal($items)
+                    ->setRoute(route('reviews.index'))
+                    ->init($widgets, $widgetSettings);
+            }, 5, 2);
+        });
     }
 
     public function addThemeOptions()
@@ -136,7 +214,7 @@ class HookServiceProvider extends ServiceProvider
             $orders = $this->setPendingOrders();
 
             if ($orders->count() == 0) {
-                return null;
+                return $options;
             }
 
             return $options . view('plugins/ecommerce::orders.notification', compact('orders'))->render();

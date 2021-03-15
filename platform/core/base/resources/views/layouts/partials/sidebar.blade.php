@@ -1,4 +1,5 @@
 @foreach ($menus = dashboard_menu()->getAll() as $menu)
+    @php $menu = apply_filters(BASE_FILTER_DASHBOARD_MENU, $menu); @endphp
     <li class="nav-item @if ($menu['active']) active @endif" id="{{ $menu['id'] }}">
         <a href="{{ $menu['url'] }}" class="nav-link nav-toggle">
             <i class="{{ $menu['icon'] }}"></i>

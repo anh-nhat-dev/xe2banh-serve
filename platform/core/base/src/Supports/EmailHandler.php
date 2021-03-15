@@ -102,9 +102,10 @@ class EmailHandler
      * @param string $value
      * @return $this
      */
-    public function setVariableValue(string $variable, string $value): self
+    public function setVariableValue(string $variable, string $value, string $module = null): self
     {
-        $this->variables[$this->module][$variable] = $value;
+        $this->variableValues[$module ? $module : $this->module][$variable] = $value;
+
         return $this;
     }
 
@@ -123,12 +124,13 @@ class EmailHandler
 
     /**
      * @param array $data
+     * @param string $module
      * @return $this
      */
-    public function setVariableValues(array $data): self
+    public function setVariableValues(array $data, string $module = null): self
     {
         foreach ($data as $name => $value) {
-            $this->variableValues[$this->module][$name] = $value;
+            $this->variableValues[$module ? $module : $this->module][$name] = $value;
         }
 
         return $this;
@@ -197,8 +199,7 @@ class EmailHandler
             $subject = $this->getTemplateSubject($template, $type);
         }
 
-        $this->send($this->getTemplateContent($template, $type), $subject, $email,
-            $args, $debug);
+        $this->send($this->getTemplateContent($template, $type), $subject, $email, $args, $debug);
 
         return true;
     }
@@ -224,6 +225,7 @@ class EmailHandler
     public function send(string $content, string $title, $to = null, $args = [], $debug = false)
     {
         try {
+
             if (empty($to)) {
                 $to = setting('admin_email', setting('email_from_address', config('mail.from.address')));
             }
@@ -302,6 +304,8 @@ class EmailHandler
      */
     protected function replaceVariableValue(array $variables, string $module, string $content): string
     {
+        do_action('email_variable_value');
+
         foreach ($variables as $variable) {
             $keys = [
                 '{{ ' . $variable . ' }}',

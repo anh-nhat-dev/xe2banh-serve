@@ -1,12 +1,11 @@
 let MediaConfig = $.parseJSON(localStorage.getItem('MediaConfig')) || {};
 
 let defaultConfig = {
-    app_key: '483a0xyzytz1242c0d520426e8ba366c530c3d9d3xs',
+    app_key: '483a0xyzytz1242c0d520426e8ba366c530c3d9d3xm',
     request_params: {
         view_type: 'tiles',
         filter: 'everything',
         view_in: 'all_media',
-        search: '',
         sort_by: 'created_at-desc',
         folder_id: 0,
     },
@@ -99,6 +98,8 @@ let defaultConfig = {
 if (!MediaConfig.app_key || MediaConfig.app_key !== defaultConfig.app_key) {
     MediaConfig = defaultConfig;
 }
+
+MediaConfig.request_params.search = '';
 
 let RecentItems = $.parseJSON(localStorage.getItem('RecentItems')) || [];
 

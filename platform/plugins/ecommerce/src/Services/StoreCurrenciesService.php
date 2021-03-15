@@ -36,6 +36,12 @@ class StoreCurrenciesService
         }
 
         foreach ($currencies as $item) {
+            if (!$item['title'] || !$item['symbol']) {
+                continue;
+            }
+
+            $item['title'] = substr(strtoupper($item['title']), 0, 3);
+
             $currency = $this->currencyRepository->findById($item['id']);
             if (!$currency) {
                 $this->currencyRepository->create($item);

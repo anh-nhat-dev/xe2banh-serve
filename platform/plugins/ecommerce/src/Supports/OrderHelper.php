@@ -44,6 +44,10 @@ class OrderHelper
             return false;
         }
 
+        if ($order->histories()->where('action', 'create_order')->count()) {
+            return false;
+        }
+
         if ($chargeId) {
             $payment = app(PaymentInterface::class)->getFirstBy(['charge_id' => $chargeId]);
 
@@ -329,6 +333,12 @@ class OrderHelper
             $productAttributesString .= ')';
         }
 
+        $image = $product->image;
+
+        if (!$image) {
+            $image = $parentProduct->image;
+        }
+
         /**
          * Add cart to session
          */
@@ -338,7 +348,7 @@ class OrderHelper
             $request->input('qty', 1),
             $product->original_price,
             [
-                'image'      => RvMedia::getImageUrl($product->image, 'thumb', false, $parentProduct->image),
+                'image'      => RvMedia::getImageUrl($image, 'thumb', false, RvMedia::getDefaultImage()),
                 'attributes' => $productAttributesString,
                 'taxRate'    => $parentProduct->tax->percentage,
                 'extras'     => $request->input('extras', []),

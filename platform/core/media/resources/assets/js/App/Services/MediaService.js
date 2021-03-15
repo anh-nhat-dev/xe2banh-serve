@@ -44,7 +44,7 @@ export class MediaService {
         params.onSelectFiles = undefined;
 
         if (typeof params.search != 'undefined' && params.search != '' && typeof params.selected_file_id != 'undefined') {
-            params.selected_file_id = undefined
+            params.selected_file_id = undefined;
         }
 
         params.load_more_file = load_more_file;

@@ -9,6 +9,7 @@ return [
             'description' => 'plugins/ecommerce::email.customer_new_order_description',
             'subject'     => 'New order {{ order_id }}',
             'can_off'     => true,
+            'enabled'     => false,
         ],
         'customer_cancel_order'   => [
             'title'       => 'plugins/ecommerce::email.order_cancellation_title',
@@ -27,6 +28,7 @@ return [
             'description' => 'plugins/ecommerce::email.admin_new_order_description',
             'subject'     => 'New order {{ order_id }}',
             'can_off'     => true,
+            'enabled'     => false,
         ],
         'order_confirm'           => [
             'title'       => 'plugins/ecommerce::email.order_confirmation_title',

@@ -211,14 +211,14 @@ class CreateEcommerceTables extends Migration
             $table->string('shipping_option', 60)->nullable();
             $table->string('shipping_method', 60)->default('default');
             $table->string('status', 120)->default('pending');
-            $table->decimal('amount', 15, 2);
+            $table->decimal('amount', 15);
             $table->integer('currency_id')->unsigned()->nullable();
             $table->decimal('tax_amount')->nullable();
             $table->decimal('shipping_amount')->nullable();
             $table->text('description')->nullable();
             $table->string('coupon_code', 120)->nullable();
-            $table->decimal('discount_amount', 15, 2)->nullable();
-            $table->decimal('sub_total', 15, 2);
+            $table->decimal('discount_amount', 15)->nullable();
+            $table->decimal('sub_total', 15);
             $table->boolean('is_confirmed')->default(false);
             $table->string('discount_description', 255)->nullable();
             $table->boolean('is_finished')->default(1)->nullable();
@@ -231,8 +231,8 @@ class CreateEcommerceTables extends Migration
             $table->id();
             $table->integer('order_id')->unsigned();
             $table->integer('qty');
-            $table->decimal('price', 15, 2);
-            $table->decimal('tax_amount', 15, 2);
+            $table->decimal('price', 15);
+            $table->decimal('tax_amount', 15);
             $table->text('options')->nullable();
             $table->integer('product_id')->unsigned()->nullable();
             $table->string('product_name');
@@ -268,7 +268,7 @@ class CreateEcommerceTables extends Migration
             $table->integer('product_quantity', false, true)->nullable();
             $table->string('type_option', 100)->default('amount');
             $table->string('target', 100)->default('all-orders');
-            $table->decimal('min_order_price', 15, 2)->nullable();
+            $table->decimal('min_order_price', 15)->nullable();
             $table->timestamps();
         });
 
@@ -354,9 +354,9 @@ class CreateEcommerceTables extends Migration
             $table->integer('shipping_id')->unsigned();
             $table->enum('type', ['base_on_price', 'base_on_weight'])->default('base_on_price')->nullable();
             $table->integer('currency_id')->unsigned()->nullable();
-            $table->decimal('from', 15, 2)->default(0)->nullable();
-            $table->decimal('to', 15, 2)->default(0)->nullable();
-            $table->decimal('price', 15, 2)->default(0)->nullable();
+            $table->decimal('from', 15)->default(0)->nullable();
+            $table->decimal('to', 15)->default(0)->nullable();
+            $table->decimal('price', 15)->default(0)->nullable();
             $table->timestamps();
         });
 
@@ -366,7 +366,7 @@ class CreateEcommerceTables extends Migration
             $table->string('country', 120)->nullable();
             $table->string('state', 120)->nullable();
             $table->string('city', 120)->nullable();
-            $table->decimal('adjustment_price', 15, 2)->default(0)->nullable();
+            $table->decimal('adjustment_price', 15)->default(0)->nullable();
             $table->boolean('is_enabled')->default(true);
             $table->timestamps();
         });
@@ -389,10 +389,10 @@ class CreateEcommerceTables extends Migration
             $table->string('shipment_id', 120)->nullable();
             $table->string('note', 120)->nullable();
             $table->string('status', 120)->default('pending');
-            $table->decimal('cod_amount', 15, 2)->default(0)->nullable();
+            $table->decimal('cod_amount', 15)->default(0)->nullable();
             $table->string('cod_status', 60)->default('pending');
             $table->string('cross_checking_status', 60)->default('pending');
-            $table->decimal('price', 15, 2)->default(0)->nullable();
+            $table->decimal('price', 15)->default(0)->nullable();
             $table->integer('store_id', false, true)->nullable();
             $table->timestamps();
         });

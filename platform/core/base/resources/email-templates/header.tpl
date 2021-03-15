@@ -52,58 +52,32 @@
                 <!-- START CONTAINER NAVIGATION -->
                 <tbody>
                 <tr>
-                    <td valign="top" style="border-collapse: collapse;">
+                    <td valign="middle" style="border-collapse: collapse;">
                         <!-- start top navigation container -->
                         <table width="800" align="center" border="0" cellspacing="0" cellpadding="0" class="full-width"
                                style="border-spacing: 0;">
                             <tbody>
                             <tr>
-                                <td valign="top" bgcolor="00a0e0" style="border-collapse: collapse;">
-                                    <!-- start top navigaton -->
+                                <td valign="middle" bgcolor="00a0e0" style="border-collapse: collapse;">
+                                    <!-- start top navigation -->
                                     <table width="800" align="center" border="0" cellspacing="0" cellpadding="0"
                                            class="full-width" style="border-spacing: 0;">
                                         <tbody>
                                         <tr>
-                                            <td valign="top" style="border-collapse: collapse;">
-                                                <table align="left" border="0" cellspacing="0" cellpadding="0"
+                                            <td valign="middle" style="border-collapse: collapse;">
+                                                <table border="0" align="left" cellpadding="0" cellspacing="0"
                                                        class="container2" style="border-spacing: 0;">
                                                     <tbody>
+                                                    <!--start event date -->
                                                     <tr>
-                                                        <td height="10" style="border-collapse: collapse;"></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="remove-479" height="12"
-                                                            style="border-collapse: collapse;"></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="remove-479" height="12"
-                                                            style="border-collapse: collapse;"></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td align="center" valign="top"
+                                                        <td valign="middle" align="center"
                                                             style="border-collapse: collapse;">
-                                                            <table align="center" border="0" cellspacing="0"
-                                                                   cellpadding="0" style="border-spacing: 0;">
+                                                            <table align="right" border="0" cellpadding="0"
+                                                                   cellspacing="0" class="clear-align"
+                                                                   style="border-spacing: 0;">
                                                                 <tbody>
                                                                 <tr>
-                                                                    <!--start  space width -->
-                                                                    <td valign="top" align="center" class="remove-479"
-                                                                        style="border-collapse: collapse;">
-                                                                        <table width="20" align="right" border="0"
-                                                                               cellpadding="0" cellspacing="0"
-                                                                               style="height: 5px;border-spacing: 0;">
-                                                                            <tbody>
-                                                                            <tr>
-                                                                                <td valign="top"
-                                                                                    style="border-collapse: collapse;">
-                                                                                </td>
-                                                                            </tr>
-                                                                            </tbody>
-                                                                        </table>
-                                                                    </td>
-                                                                    <!--start  space width -->
-                                                                    <td align="center" valign="top"
-                                                                        style="font-size:13px;line-height:22px;color:#fff;font-weight:normal;text-align:center;font-family:Tahoma,Helvetica,Arial,sans-serif;border-collapse:collapse">
+                                                                    <td style="padding:15px;border-collapse:collapse; height: 70px; line-height: 70px">
                                                                         <a href="{{ site_url }}" style="color: #fff; text-decoration: none !important;"
                                                                            target="_blank">
                                                                             <img title="Logo"
@@ -119,70 +93,28 @@
                                                             </table>
                                                         </td>
                                                     </tr>
-                                                    <tr>
-                                                        <td height="10" valign="top"
-                                                            style="border-collapse: collapse;"></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="remove-479" height="12" valign="top"
-                                                            style="border-collapse: collapse;"></td>
-                                                    </tr>
                                                     </tbody>
                                                 </table>
+                                                <!--end content nav -->
+
                                                 <!--start content nav -->
                                                 <table border="0" align="right" cellpadding="0" cellspacing="0"
                                                        class="container2" style="border-spacing: 0;">
                                                     <tbody>
-                                                    <tr>
-                                                        <td class="remove-479" height="30"
-                                                            style="border-collapse: collapse;"></td>
-                                                    </tr>
                                                     <!--start event date -->
                                                     <tr>
-                                                        <td valign="mindle" align="center"
+                                                        <td valign="middle" align="center"
                                                             style="border-collapse: collapse;">
                                                             <table align="right" border="0" cellpadding="0"
                                                                    cellspacing="0" class="clear-align"
                                                                    style="border-spacing: 0;">
                                                                 <tbody>
                                                                 <tr>
-                                                                    <td style="border-collapse: collapse;">
-                                                                        <img width="20"
-                                                                             style="display: block;height: auto !important;"
-                                                                             src="https://gallery.mailchimp.com/7322fbb8c9fca82452c7533d9/images/336af2da-ecfd-4520-8df5-5df1b12067a6.jpg"
-                                                                             alt="icon date">
-                                                                    </td>
-                                                                    <td style="border-collapse: collapse;">
-                                                                        &nbsp;&nbsp;</td>
-                                                                    <td style="font-size: 13px;line-height: 22px;color: #FFF;font-weight: normal;text-align: center;font-family: Tahoma, Helvetica, Arial, sans-serif;border-collapse: collapse;">{{ date_time }}</td>
-                                                                    <!--start  space width -->
-                                                                    <td valign="top" align="center" class="remove-479"
-                                                                        style="border-collapse: collapse;">
-                                                                        <table width="20" align="right" border="0"
-                                                                               cellpadding="0" cellspacing="0"
-                                                                               style="height: 5px;border-spacing: 0;">
-                                                                            <tbody>
-                                                                            <tr>
-                                                                                <td valign="top"
-                                                                                    style="border-collapse: collapse;">
-                                                                                </td>
-                                                                            </tr>
-                                                                            </tbody>
-                                                                        </table>
-                                                                    </td>
-                                                                    <!--start  space width -->
+                                                                    <td style="font-size: 13px;line-height: 22px;color: #FFF;padding: 15px;font-weight: normal;text-align: center;font-family: Tahoma, Helvetica, Arial, sans-serif;border-collapse: collapse;"><span style="display: inline-block; height: 70px; line-height: 70px;">{{ date_time }}</span></td>
                                                                 </tr>
                                                                 </tbody>
                                                             </table>
                                                         </td>
-                                                    </tr>
-                                                    <!--end event date -->
-                                                    <tr>
-                                                        <td height="10" style="border-collapse: collapse;"></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="remove-479" height="20"
-                                                            style="border-collapse: collapse;"></td>
                                                     </tr>
                                                     </tbody>
                                                 </table>
@@ -191,7 +123,7 @@
                                         </tr>
                                         </tbody>
                                     </table>
-                                    <!-- end top navigaton -->
+                                    <!-- end top navigation -->
                                 </td>
                             </tr>
                             </tbody>

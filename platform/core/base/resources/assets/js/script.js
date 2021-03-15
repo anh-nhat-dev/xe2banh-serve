@@ -662,11 +662,13 @@ class Botble {
             });
 
             $('.list-gallery-media-images').each((index, item) => {
-                let $current = $(item);
-                if ($current.data('ui-sortable')) {
-                    $current.sortable('destroy');
+                if (jQuery().sortable) {
+                    let $current = $(item);
+                    if ($current.data('ui-sortable')) {
+                        $current.sortable('destroy');
+                    }
+                    $current.sortable();
                 }
-                $current.sortable();
             });
         }
     }

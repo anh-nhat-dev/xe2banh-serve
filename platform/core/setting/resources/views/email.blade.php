@@ -148,6 +148,10 @@
                         </label>
                     </div>
 
+                    <div class="form-group">
+                        <button class="btn btn-info" type="button" data-target="#send-test-email-modal" data-toggle="modal">{{ trans('core/setting::setting.test_send_mail') }}</button>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -160,7 +164,6 @@
                 &nbsp;
             </div>
             <div class="flexbox-annotated-section-content">
-                <button class="btn btn-secondary" type="button" data-target="#send-test-email-modal" data-toggle="modal">{{ trans('core/setting::setting.test_send_mail') }}</button>
                 <button class="btn btn-info" type="submit">{{ trans('core/setting::setting.save_settings') }}</button>
             </div>
         </div>

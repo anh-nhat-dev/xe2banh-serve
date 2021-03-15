@@ -147,7 +147,7 @@
 
                 @if (isset($errors))
                     @foreach ($errors->all() as $error)
-                        window.showAlert('alert-danger', '{{ $error }}');
+                        window.showAlert('alert-danger', '{!! $error !!}');
                     @endforeach
                 @endif
             });

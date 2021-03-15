@@ -7,6 +7,13 @@
                                 <form method="POST" action="{{ route('customer.login.post') }}">
                                     @csrf
                                     <h2 class="normal"><span>{{ __('Login') }}</span></h2>
+                                    @if (isset($errors) && $errors->has('confirmation'))
+                                        <div class="alert alert-danger">
+                                            <span>{!! $errors->first('confirmation') !!}</span>
+                                        </div>
+                                        <br>
+                                    @endif
+
                                     <div class="form-field-wrapper form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                                         <label>{{ __('Email') }} <span class="required">*</span></label>
                                         <input id="email" class="input-md form-full-width" name="email" placeholder="{{ __('Email') }}" size="30" aria-required="true" required type="email">

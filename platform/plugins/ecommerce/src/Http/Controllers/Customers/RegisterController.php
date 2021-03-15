@@ -4,13 +4,17 @@ namespace Botble\Ecommerce\Http\Controllers\Customers;
 
 use App\Http\Controllers\Controller;
 use Botble\ACL\Traits\RegistersUsers;
+use Botble\Base\Http\Responses\BaseHttpResponse;
 use Botble\Ecommerce\Models\Customer;
 use Botble\Ecommerce\Repositories\Interfaces\CustomerInterface;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\Auth\StatefulGuard;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Response;
 use SeoHelper;
 use Theme;
+use URL;
 
 class RegisterController extends Controller
 {
@@ -102,6 +106,33 @@ class RegisterController extends Controller
     }
 
     /**
+     * Handle a registration request for the application.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param BaseHttpResponse $response
+     * @return BaseHttpResponse
+     */
+    public function register(Request $request, BaseHttpResponse $response)
+    {
+        $this->validator($request->input())->validate();
+
+        event(new Registered($customer = $this->create($request->input())));
+
+        if (get_ecommerce_setting('verify_customer_email', 0)) {
+            $this->sendConfirmationToUser($customer);
+            return $this->registered($request, $customer)
+                ?: $response->setNextUrl(route('customer.login'))
+                    ->setMessage(__('Please confirm your email address.'));
+        }
+
+        $customer->confirmed_at = now();
+        $this->customerRepository->createOrUpdate($customer);
+        $this->guard()->login($customer);
+
+        return $response->setNextUrl($this->redirectPath())->setMessage(__('Registered successfully!'));
+    }
+
+    /**
      * Get the guard to be used during registration.
      *
      * @return StatefulGuard
@@ -109,5 +140,86 @@ class RegisterController extends Controller
     protected function guard()
     {
         return auth('customer');
+    }
+
+    /**
+     * Confirm a user with a given confirmation code.
+     *
+     * @param string $email
+     * @param Request $request
+     * @param BaseHttpResponse $response
+     * @param CustomerInterface $customerRepository
+     * @return BaseHttpResponse
+     */
+    public function confirm($email, Request $request, BaseHttpResponse $response, CustomerInterface $customerRepository)
+    {
+        if (!URL::hasValidSignature($request)) {
+            abort(404);
+        }
+
+        $customer = $customerRepository->getFirstBy(['email' => $email]);
+
+        if (!$customer) {
+            abort(404);
+        }
+
+        $customer->confirmed_at = now();
+        $this->customerRepository->createOrUpdate($customer);
+
+        $this->guard()->login($customer);
+
+        return $response
+            ->setNextUrl(route('customer.overview'))
+            ->setMessage(__('You successfully confirmed your email address.'));
+    }
+
+    /**
+     * Resend a confirmation code to a user.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param CustomerInterface $customerRepository
+     * @param BaseHttpResponse $response
+     * @return BaseHttpResponse
+     */
+    public function resendConfirmation(
+        Request $request,
+        CustomerInterface $customerRepository,
+        BaseHttpResponse $response
+    ) {
+        $customer = $customerRepository->getFirstBy(['email' => $request->input('email')]);
+
+        if (!$customer) {
+            return $response
+                ->setError()
+                ->setMessage(__('Cannot find this customer!'));
+        }
+
+        $this->sendConfirmationToUser($customer);
+
+        return $response
+            ->setMessage(__('We sent you another confirmation email. You should receive it shortly.'));
+    }
+
+    /**
+     * Send the confirmation code to a user.
+     *
+     * @param Customer $customer
+     */
+    protected function sendConfirmationToUser($customer)
+    {
+        // Notify the user
+        $notificationConfig = config('plugins.ecommerce.general.customer.notification');
+        if ($notificationConfig) {
+            $notification = app($notificationConfig);
+            $customer->notify($notification);
+        }
+    }
+
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function getVerify()
+    {
+        return view('plugins/ecommerce::themes.customers.verify');
     }
 }

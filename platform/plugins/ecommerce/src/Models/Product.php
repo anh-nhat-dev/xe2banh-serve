@@ -320,7 +320,13 @@ class Product extends BaseModel
                 return [];
             }
 
-            return json_decode($value) ?: [];
+            $images = json_decode((string)$value, true);
+
+            if (is_array($images)) {
+                $images = array_filter($images);
+            }
+
+            return $images ?: [];
         } catch (Exception $exception) {
             return [];
         }
@@ -383,7 +389,7 @@ class Product extends BaseModel
         if ($flashSale && $flashSale->pivot->quantity > $flashSale->pivot->sold) {
             return $this->getComparePrice($flashSale->pivot->price, $this->sale_price);
         }
-
+        
         return $this->getComparePrice($this->price, $this->sale_price);
     }
 

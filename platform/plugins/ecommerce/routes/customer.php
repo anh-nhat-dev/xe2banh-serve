@@ -46,7 +46,7 @@ Route::group(['namespace' => 'Botble\Ecommerce\Http\Controllers\Customers', 'mid
             Route::post('create-customer-when-creating-order', [
                 'as'         => 'create-customer-when-creating-order',
                 'uses'       => 'CustomerController@postCreateCustomerWhenCreatingOrder',
-                'permission' => 'customer.create',
+                'permission' => ['customers.index', 'orders.index'],
             ]);
         });
     });
@@ -67,6 +67,20 @@ Route::group([
     Route::post('password/reset', 'ResetPasswordController@reset')->name('password.email');
     Route::get('password/reset', 'ForgotPasswordController@showLinkRequestForm')->name('password.reset');
     Route::get('password/reset/{token}', 'ResetPasswordController@showResetForm')->name('password.reset.update');
+
+    Route::get('verify', 'RegisterController@getVerify')
+        ->name('verify');
+});
+
+Route::group([
+    'namespace'  => 'Botble\Ecommerce\Http\Controllers\Customers',
+    'middleware' => ['web', 'core', get_ecommerce_setting('verify_customer_email', 0) == 1 ? 'customer' : 'customer.guest'],
+    'as'         => 'customer.',
+], function () {
+    Route::get('register/confirm/resend', 'RegisterController@resendConfirmation')
+        ->name('resend_confirmation');
+    Route::get('register/confirm/{email}', 'RegisterController@confirm')
+        ->name('confirm');
 });
 
 Route::group([

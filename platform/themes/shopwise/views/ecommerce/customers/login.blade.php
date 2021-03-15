@@ -9,6 +9,12 @@
                          <div class="heading_s1">
                              <h3>{{ __('Login') }}</h3>
                          </div>
+                         @if (isset($errors) && $errors->has('confirmation'))
+                             <div class="alert alert-danger">
+                                 <span>{!! $errors->first('confirmation') !!}</span>
+                             </div>
+                             <br>
+                         @endif
                          <form method="POST" action="{{ route('customer.login.post') }}">
                              @csrf
                              <div class="form-group">

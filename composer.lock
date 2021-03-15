@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4bae7f468f74351b3e422a03ff942a94",
+    "content-hash": "12cfdc7e38aa7ae1c817e36b8aefd2df",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -282,7 +282,7 @@
         },
         {
             "name": "botble/menu",
-            "version": "dev-master",
+            "version": "dev-develop",
             "dist": {
                 "type": "path",
                 "url": "./platform/packages/menu",
@@ -315,7 +315,7 @@
         },
         {
             "name": "botble/page",
-            "version": "dev-master",
+            "version": "dev-develop",
             "dist": {
                 "type": "path",
                 "url": "./platform/packages/page",
@@ -345,7 +345,7 @@
         },
         {
             "name": "botble/platform",
-            "version": "dev-master",
+            "version": "dev-develop",
             "dist": {
                 "type": "path",
                 "url": "./platform/core",
@@ -431,7 +431,7 @@
         },
         {
             "name": "botble/plugin-management",
-            "version": "dev-master",
+            "version": "dev-develop",
             "dist": {
                 "type": "path",
                 "url": "./platform/packages/plugin-management",
@@ -460,7 +460,7 @@
         },
         {
             "name": "botble/revision",
-            "version": "dev-master",
+            "version": "dev-develop",
             "dist": {
                 "type": "path",
                 "url": "./platform/packages/revision",
@@ -489,7 +489,7 @@
         },
         {
             "name": "botble/seo-helper",
-            "version": "dev-master",
+            "version": "dev-develop",
             "dist": {
                 "type": "path",
                 "url": "./platform/packages/seo-helper",
@@ -522,7 +522,7 @@
         },
         {
             "name": "botble/shortcode",
-            "version": "dev-master",
+            "version": "dev-develop",
             "dist": {
                 "type": "path",
                 "url": "./platform/packages/shortcode",
@@ -551,7 +551,7 @@
         },
         {
             "name": "botble/sitemap",
-            "version": "dev-master",
+            "version": "dev-develop",
             "dist": {
                 "type": "path",
                 "url": "./platform/packages/sitemap",
@@ -580,7 +580,7 @@
         },
         {
             "name": "botble/slug",
-            "version": "dev-master",
+            "version": "dev-develop",
             "dist": {
                 "type": "path",
                 "url": "./platform/packages/slug",
@@ -612,7 +612,7 @@
         },
         {
             "name": "botble/theme",
-            "version": "dev-master",
+            "version": "dev-develop",
             "dist": {
                 "type": "path",
                 "url": "./platform/packages/theme",
@@ -653,7 +653,7 @@
         },
         {
             "name": "botble/widget",
-            "version": "dev-master",
+            "version": "dev-develop",
             "dist": {
                 "type": "path",
                 "url": "./platform/packages/widget",
@@ -11703,16 +11703,16 @@
         },
         {
             "name": "psy/psysh",
-            "version": "v0.10.6",
+            "version": "v0.10.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
-                "reference": "6f990c19f91729de8b31e639d6e204ea59f19cf3"
+                "reference": "a395af46999a12006213c0c8346c9445eb31640c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/6f990c19f91729de8b31e639d6e204ea59f19cf3",
-                "reference": "6f990c19f91729de8b31e639d6e204ea59f19cf3",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/a395af46999a12006213c0c8346c9445eb31640c",
+                "reference": "a395af46999a12006213c0c8346c9445eb31640c",
                 "shasum": ""
             },
             "require": {
@@ -11773,9 +11773,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bobthecow/psysh/issues",
-                "source": "https://github.com/bobthecow/psysh/tree/v0.10.6"
+                "source": "https://github.com/bobthecow/psysh/tree/v0.10.7"
             },
-            "time": "2021-01-18T15:53:43+00:00"
+            "time": "2021-03-14T02:14:56+00:00"
         },
         {
             "name": "react/promise",

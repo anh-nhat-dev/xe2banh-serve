@@ -381,6 +381,22 @@
 
                         <div class="form-group">
                             <label class="text-title-field"
+                                   for="verify_customer_email">{{ trans('plugins/ecommerce::ecommerce.setting.verify_customer_email') }}
+                            </label>
+                            <label class="hrv-label">
+                                <input type="radio" name="verify_customer_email" class="hrv-radio"
+                                       value="1"
+                                       @if (get_ecommerce_setting('verify_customer_email', 0) == 1) checked @endif>{{ trans('core/setting::setting.general.yes') }}
+                            </label>
+                            <label class="hrv-label">
+                                <input type="radio" name="verify_customer_email" class="hrv-radio"
+                                       value="0"
+                                       @if (get_ecommerce_setting('verify_customer_email', 0) == 0) checked @endif>{{ trans('core/setting::setting.general.no') }}
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="text-title-field"
                                    for="available_countries">{{ trans('plugins/ecommerce::ecommerce.setting.available_countries') }}
                             </label>
                             <label><input type="checkbox" class="check-all" data-set=".available-countries">{{ trans('plugins/ecommerce::ecommerce.setting.all') }}</label>
@@ -402,6 +418,7 @@
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>

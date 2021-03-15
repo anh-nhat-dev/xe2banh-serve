@@ -3,6 +3,6 @@
     "namespace": "Theme\\Shopwise\\",
     "description": "Ecommerce shopping theme",
     "author": "Botble Technologies",
-    "version": "1.6",
+    "version": "1.7",
     "required_plugins": []
 }

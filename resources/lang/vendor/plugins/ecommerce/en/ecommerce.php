@@ -59,6 +59,7 @@ return [
         'separator_space'                       => 'Space ( )',
         'available_countries'                   => 'Available countries',
         'all'                                   => 'All',
+        'verify_customer_email'                 => 'Verify customer\' email?',
     ],
     'store_address'                   => 'Store address',
     'store_phone'                     => 'Store phone',

@@ -226,11 +226,12 @@ class OrderController extends BaseController
             $payment = $this->paymentRepository->createOrUpdate([
                 'amount'          => $order->amount,
                 'currency'        => get_application_currency()->title,
-                'payment_channel' => $order->payment->payment_channel,
+                'payment_channel' => $request->input('payment_method'),
                 'status'          => $request->input('payment_status', PaymentStatusEnum::PENDING),
                 'payment_type'    => 'confirm',
                 'order_id'        => $order->id,
                 'charge_id'       => Str::upper(Str::random(10)),
+                'user_id'         => Auth::user()->getAuthIdentifier(),
             ]);
 
             $order->payment_id = $payment->id;
@@ -292,7 +293,7 @@ class OrderController extends BaseController
                     ->getModel()
                     ->where('id', $product->id)
                     ->where('with_storehouse_management', 1)
-                    ->where('quantity', '>', 0)
+                    ->where('quantity', '>=', Arr::get($productItem, 'quantity', 1))
                     ->decrement('quantity', Arr::get($productItem, 'quantity', 1));
             }
         }

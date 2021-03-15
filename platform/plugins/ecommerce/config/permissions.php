@@ -282,8 +282,9 @@ return [
     ],
 
     [
-        'name' => 'Flash sales',
-        'flag' => 'flash-sale.index',
+        'name'        => 'Flash sales',
+        'flag'        => 'flash-sale.index',
+        'parent_flag' => 'plugins.ecommerce',
     ],
     [
         'name'        => 'Create',

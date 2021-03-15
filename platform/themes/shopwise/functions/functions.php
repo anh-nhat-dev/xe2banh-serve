@@ -165,6 +165,20 @@ theme_option()
         ],
     ])
     ->setField([
+        'id'         => 'newsletter_show_after_seconds',
+        'section_id' => 'opt-text-subsection-general',
+        'type'       => 'number',
+        'label'      => __('Newsletter popup delay time (seconds)'),
+        'attributes' => [
+            'name'    => 'newsletter_show_after_seconds',
+            'value'   => 10,
+            'options' => [
+                'class'        => 'form-control',
+                'placeholder'  => __('Default: 10 (seconds)'),
+            ],
+        ],
+    ])
+    ->setField([
         'id'         => 'logo_footer',
         'section_id' => 'opt-text-subsection-logo',
         'type'       => 'mediaImage',

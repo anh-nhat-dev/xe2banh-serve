@@ -4,7 +4,6 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Schema;
-use Menu;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,6 +25,5 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Schema::defaultStringLength(191);
-        Menu::addMenuLocation('header-top-link-menu' , 'Header Top Link Navigation');
     }
 }

@@ -43,7 +43,7 @@
                 this.isLoading = true;
                 axios.get(this.url)
                     .then(res => {
-                        this.data = res.data.data;
+                        this.data = res.data.data ? res.data.data : [];
                         this.isLoading = false;
                     })
                     .catch(res => {

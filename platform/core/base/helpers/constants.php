@@ -54,6 +54,10 @@ if (!defined('BASE_ACTION_ENQUEUE_SCRIPTS')) {
     define('BASE_ACTION_ENQUEUE_SCRIPTS', 'base_action_enqueue_scripts');
 }
 
+if (!defined('BASE_FILTER_DASHBOARD_MENU')) {
+    define('BASE_FILTER_DASHBOARD_MENU', 'base_filter_dashboard_menu');
+}
+
 if (!defined('BASE_FILTER_APPEND_MENU_NAME')) {
     define('BASE_FILTER_APPEND_MENU_NAME', 'base_filter_append_menu_name');
 }

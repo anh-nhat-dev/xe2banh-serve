@@ -24,7 +24,7 @@
                 <div
                     class="payment-name-label-group @if (get_payment_setting('status', SSLCOMMERZ_PAYMENT_METHOD_NAME) == 0) hidden @endif">
                     <span class="payment-note v-a-t">{{ trans('plugins/payment::payment.use') }}:</span> <label
-                        class="ws-nm inline-display method-name-label">{{ get_payment_setting('name', SSLCOMMERZ_PAYMENT_METHOD_NAME) }}</label>
+                        class="ws-nm inline-display method-name-label">{{ get_payment_setting('name', SSLCOMMERZ_PAYMENT_METHOD_NAME, __('Online payment via SslCommerz')) }}</label>
                 </div>
             </div>
             <div class="float-right">

@@ -1041,3 +1041,24 @@ body {
         margin-right: 25%;
     }
 }
+
+#alert-container {
+    left: 5px;
+    right: auto;
+
+    .alert {
+        .message-icon {
+            right: 5%;
+            left: auto;
+        }
+
+        padding: 15px 60px 15px 40px;
+    }
+
+    .alert.alert-dismissible {
+        .close {
+            left: 15px;
+            right: auto;
+        }
+    }
+}

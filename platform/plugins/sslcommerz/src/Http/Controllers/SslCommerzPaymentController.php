@@ -34,7 +34,7 @@ class SslCommerzPaymentController extends BaseController
 
         $this->processOrder($request, $validation);
 
-        if ($validation) {
+        if (!$validation) {
             return $response
                 ->setError()
                 ->setNextUrl(route('public.checkout.success', $checkoutToken))

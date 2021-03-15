@@ -13,6 +13,7 @@
         const COOKIE_NAME = 'botble_cookie_newsletter';
         const COOKIE_DOMAIN = $('div[data-session-domain]').data('session-domain');
         const COOKIE_MODAL = $('#newsletter-modal');
+        const COOKIE_MODAL_TIME = COOKIE_MODAL.data('time');
 
         function newsletterWithCookies(expirationInDays) {
             setCookie(COOKIE_NAME, COOKIE_VALUE, expirationInDays);
@@ -38,7 +39,7 @@
         if (!cookieExists(COOKIE_NAME)) {
             setTimeout(() => {
                 COOKIE_MODAL.modal('show', {}, 500);
-            }, 5000);
+            }, COOKIE_MODAL_TIME);
         }
 
         COOKIE_MODAL.on('hidden.bs.modal', () => {

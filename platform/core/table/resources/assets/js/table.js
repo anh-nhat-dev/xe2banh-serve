@@ -238,38 +238,36 @@
         }
 
         init() {
-            if (typeof window.LaravelDataTables !== 'undefined') {
 
-                $(document).on('change', '.table-check-all', event => {
-                    let _self = $(event.currentTarget);
-                    let set = _self.attr('data-set');
-                    let checked = _self.prop('checked');
-                    $(set).each((index, el) => {
-                        if (checked) {
-                            $(el).prop('checked', true);
-                        } else {
-                            $(el).prop('checked', false);
-                        }
-                    });
-                });
-
-                $(document).on('change', '.checkboxes', event => {
-                    let _self = $(event.currentTarget);
-                    let table = _self.closest('.table-wrapper').find('.table').prop('id');
-
-                    let ids = [];
-                    let $table = $('#' + table);
-                    $table.find('.checkboxes:checked').each((i, el) => {
-                        ids[i] = $(el).val();
-                    });
-
-                    if (ids.length !== $table.find('.checkboxes').length) {
-                        _self.closest('.table-wrapper').find('.table-check-all').prop('checked', false);
+            $(document).on('change', '.table-check-all', event => {
+                let _self = $(event.currentTarget);
+                let set = _self.attr('data-set');
+                let checked = _self.prop('checked');
+                $(set).each((index, el) => {
+                    if (checked) {
+                        $(el).prop('checked', true);
                     } else {
-                        _self.closest('.table-wrapper').find('.table-check-all').prop('checked', true);
+                        $(el).prop('checked', false);
                     }
                 });
-            }
+            });
+
+            $(document).on('change', '.checkboxes', event => {
+                let _self = $(event.currentTarget);
+                let table = _self.closest('.table-wrapper').find('.table').prop('id');
+
+                let ids = [];
+                let $table = $('#' + table);
+                $table.find('.checkboxes:checked').each((i, el) => {
+                    ids[i] = $(el).val();
+                });
+
+                if (ids.length !== $table.find('.checkboxes').length) {
+                    _self.closest('.table-wrapper').find('.table-check-all').prop('checked', false);
+                } else {
+                    _self.closest('.table-wrapper').find('.table-check-all').prop('checked', true);
+                }
+            });
 
             $(document).on('click', '.btn-show-table-options', event => {
                 event.preventDefault();

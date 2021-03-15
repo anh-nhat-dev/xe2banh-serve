@@ -78,7 +78,7 @@ class HookServiceProvider extends ServiceProvider
             $response = Mollie::api()->payments->create([
                 'amount'      => [
                     'currency' => $request->input('currency'),
-                    'value'    => number_format($request->input('amount'), 2),
+                    'value'    => number_format($request->input('amount'), 2, '.', ''),
                 ],
                 'description' => 'Order #' . $request->input('order_id'),
                 'redirectUrl' => route('public.checkout.success', OrderHelper::getOrderSessionToken()),

@@ -595,7 +595,7 @@ class PublicCheckoutController
 
             $this->orderHistoryRepository->createOrUpdate([
                 'action'      => 'create_order_from_payment_page',
-                'description' => trans('Order is created from checkout page'),
+                'description' => __('Order is created from checkout page'),
                 'order_id'    => $order->id,
             ]);
 
@@ -645,7 +645,7 @@ class PublicCheckoutController
                         'id'                         => $cartItem->id,
                         'with_storehouse_management' => 1,
                     ])
-                    ->where('quantity', '>', 0)
+                    ->where('quantity', '>=', $cartItem->qty)
                     ->decrement('quantity', $cartItem->qty);
             }
 
