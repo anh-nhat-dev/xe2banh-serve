@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Botble\Base\Enums\BaseStatusEnum;
 use App\Http\Resources\{CategoryResource, MenuNodeResource, ProductResource};
 use Botble\Ecommerce\Models\Product;
 use Botble\Menu\Repositories\Interfaces\MenuLocationInterface;
 use Botble\Menu\Repositories\Interfaces\MenuNodeInterface;
 use Botble\Ecommerce\Repositories\Interfaces\ProductInterface;
+use Botble\Slug\Repositories\Interfaces\SlugInterface;
+use Botble\Ecommerce\Repositories\Interfaces\ProductVariationInterface;
+use Botble\Ecommerce\Repositories\Interfaces\ProductVariationItemInterface;
 use Illuminate\Http\Request;
 use SlugHelper;
 
@@ -17,6 +21,16 @@ class ShopWiseController extends Controller
 {
 
 
+    /**
+     * @var SlugInterface
+     */
+    protected $slugRepository;
+
+
+    /**
+     * @var ProductRepository
+     */
+    protected $productRepository;
 
 
     /**
@@ -30,10 +44,16 @@ class ShopWiseController extends Controller
     protected $menuNodeRepository;
 
 
-    public function __construct(MenuLocationInterface $menuLocationRepository, MenuNodeInterface $menuNodeRepository)
-    {
+    public function __construct(
+        MenuLocationInterface $menuLocationRepository,
+        ProductInterface $productRepository,
+        MenuNodeInterface $menuNodeRepository,
+        SlugInterface $slugRepository
+    ) {
         $this->menuLocationRepository = $menuLocationRepository;
         $this->menuNodeRepository = $menuNodeRepository;
+        $this->slugRepository = $slugRepository;
+        $this->productRepository = $productRepository;
     }
 
 
@@ -118,7 +138,7 @@ class ShopWiseController extends Controller
      */
     public function getProducts(Request $request)
     {
-
+        $request->request->add(["is_single" => false]);
 
         $params = [
             'condition' => [
@@ -163,23 +183,37 @@ class ShopWiseController extends Controller
     /**
      * 
      */
-    public function getProduct($slug)
+    public function getProduct(Request $request, $slug)
     {
 
-        $slug = SlugHelper::getSlug($slug, SlugHelper::getPrefix(Product::class));
+        $request->request->add(["is_single" => true]);
 
+        $slug = $this->slugRepository->getFirstBy([
+            'key'            => $slug,
+            'reference_type' => Product::class,
+            'prefix'         => SlugHelper::getPrefix(Product::class),
+        ]);
+        // dd($slug);
         if (empty($slug)) {
             return response()->json(["message" => "Không tìm thấy sản phẩm"], 404);
         }
 
         $condition = [
-            "status" => \Botble\Base\Enums\BaseStatusEnum::PUBLISHED,
-            "is_variation" => 0
+            'ec_products.id'     => $slug->reference_id,
+            'ec_products.status' => BaseStatusEnum::PUBLISHED,
         ];
 
-        $product = app(ProductInterface::class)->getFirstBy($condition);
+        $product = get_products([
+            'condition' => $condition,
+            'take'      => 1,
+            'with'      => [
+                "productAttributes",
+                "variations",
+                "variations.productAttributes",
+                "variations.product"
+            ],
+        ]);
 
-        // return response()->json(['item' => $product]);
-        return ProductResource::collection($product);
+        return new ProductResource($product);
     }
 }
