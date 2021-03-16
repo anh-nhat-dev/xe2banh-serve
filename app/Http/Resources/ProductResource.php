@@ -36,6 +36,8 @@ class ProductResource extends JsonResource
             "images" => collect($this->images)->map(function ($link) {
                 return RvMedia::getImageUrl($link, null, false);
             }),
+            "description" => $this->description,
+            "content"   => $this->content,
             "productAttributes" => $this->productAttributes,
             "productAttributeSets" => $this->productAttributeSets,
             "variations" => VariationResource::collection($this->variations),

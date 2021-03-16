@@ -210,10 +210,11 @@ class ShopWiseController extends Controller
                 "productAttributes",
                 "variations",
                 "variations.productAttributes",
-                "variations.product"
+                "variations.product",
             ],
         ]);
 
         return new ProductResource($product);
+        // return response()->json(["item"  => $product]);
     }
 }
