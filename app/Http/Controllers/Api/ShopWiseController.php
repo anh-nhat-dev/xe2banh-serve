@@ -5,13 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Botble\Base\Enums\BaseStatusEnum;
 use App\Http\Resources\{CategoryResource, MenuNodeResource, ProductResource};
-use Botble\Ecommerce\Models\Product;
-use Botble\Menu\Repositories\Interfaces\MenuLocationInterface;
-use Botble\Menu\Repositories\Interfaces\MenuNodeInterface;
-use Botble\Ecommerce\Repositories\Interfaces\ProductInterface;
+use Botble\Ecommerce\Models\{Product, ProductCategory};
+use Botble\Menu\Repositories\Interfaces\{MenuLocationInterface, MenuNodeInterface};
 use Botble\Slug\Repositories\Interfaces\SlugInterface;
-use Botble\Ecommerce\Repositories\Interfaces\ProductVariationInterface;
-use Botble\Ecommerce\Repositories\Interfaces\ProductVariationItemInterface;
+use Botble\Ecommerce\Repositories\Interfaces\{ProductVariationInterface, ProductVariationItemInterface, ProductInterface, ProductCategoryInterface};
 use Illuminate\Http\Request;
 use SlugHelper;
 
@@ -20,6 +17,12 @@ use SlugHelper;
 class ShopWiseController extends Controller
 {
 
+
+
+    /**
+     * @var ProductCategoryInterface
+     */
+    protected $categoryProductRepository;
 
     /**
      * @var SlugInterface
@@ -48,12 +51,14 @@ class ShopWiseController extends Controller
         MenuLocationInterface $menuLocationRepository,
         ProductInterface $productRepository,
         MenuNodeInterface $menuNodeRepository,
-        SlugInterface $slugRepository
+        SlugInterface $slugRepository,
+        ProductCategoryInterface $categoryProductRepository
     ) {
         $this->menuLocationRepository = $menuLocationRepository;
         $this->menuNodeRepository = $menuNodeRepository;
         $this->slugRepository = $slugRepository;
         $this->productRepository = $productRepository;
+        $this->categoryProductRepository = $categoryProductRepository;
     }
 
 
@@ -193,10 +198,8 @@ class ShopWiseController extends Controller
             'reference_type' => Product::class,
             'prefix'         => SlugHelper::getPrefix(Product::class),
         ]);
-        // dd($slug);
-        if (empty($slug)) {
-            return response()->json(["message" => "Không tìm thấy sản phẩm"], 404);
-        }
+
+        if (empty($slug)) goto not_found;
 
         $condition = [
             'ec_products.id'     => $slug->reference_id,
@@ -211,10 +214,66 @@ class ShopWiseController extends Controller
                 "variations",
                 "variations.productAttributes",
                 "variations.product",
+                "promotions"
             ],
         ]);
 
+        if (empty($product)) goto not_found;
+
         return new ProductResource($product);
-        // return response()->json(["item"  => $product]);
+
+        not_found:
+        return response()->json(["message" => "Không tìm thấy sản phẩm"], 404);
+    }
+
+    /**
+     * 
+     */
+    public function getRelatedProducts(Request $request, $id)
+    {
+
+        $condition = [
+            'ec_products.id'     => $id,
+            'ec_products.status' => BaseStatusEnum::PUBLISHED,
+        ];
+
+        $product = get_products([
+            'condition' => $condition,
+            'take'      => 1,
+
+        ]);
+
+        $products = get_related_products($product);
+
+        return ProductResource::collection($products);
+    }
+
+    /**
+     * 
+     */
+    public function getCategoryBySlug($slug)
+    {
+        $slug = $this->slugRepository->getFirstBy([
+            'key'            => $slug,
+            'reference_type' => ProductCategory::class,
+            'prefix'         => SlugHelper::getPrefix(ProductCategory::class),
+        ]);
+
+
+        if (empty($slug)) goto not_found;
+
+        $condition = [
+            'id'     => $slug->reference_id,
+            'status' => BaseStatusEnum::PUBLISHED,
+        ];
+
+        $category = $this->categoryProductRepository->getFirstBy($condition, ["*"], ["children", "parent"]);
+
+        if (empty($category)) goto not_found;
+
+        return new CategoryResource($category);
+
+        not_found:
+        return response()->json(["message" => "Không tìm thấy danh mục"], 404);
     }
 }

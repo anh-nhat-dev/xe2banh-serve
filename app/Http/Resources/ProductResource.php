@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources;
 
-use App\Http\Resources\VariationResource;
+use App\Http\Resources\{VariationResource, CategoryResource};
 use Illuminate\Http\Resources\Json\JsonResource;
 use RvMedia;
 
@@ -29,7 +29,7 @@ class ProductResource extends JsonResource
             "sale_price" => $this->sale_price,
             "image"  => RvMedia::getImageUrl($this->image, null, false),
             "front_sale_price" => $this->front_sale_price,
-
+            "promotions" => $this->promotions
         ];
 
         $advanced_response = [
@@ -42,9 +42,10 @@ class ProductResource extends JsonResource
             "productAttributeSets" => $this->productAttributeSets,
             "variations" => VariationResource::collection($this->variations),
             "brand" => $this->brand,
+            "average_star" => get_average_star_of_product($this->id),
+            "total_reviewed" => get_count_reviewed_of_product($this->id),
+            "categories" => CategoryResource::collection($this->categories)
         ];
-
-
 
         return !isset($is_single) ? $normal_response : array_merge($normal_response, $advanced_response);
     }

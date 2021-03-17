@@ -177,8 +177,12 @@ class Product extends BaseModel
      */
     public function crossSales()
     {
-        return $this->belongsToMany(Product::class, 'ec_product_cross_sale_relations', 'from_product_id',
-            'to_product_id');
+        return $this->belongsToMany(
+            Product::class,
+            'ec_product_cross_sale_relations',
+            'from_product_id',
+            'to_product_id'
+        );
     }
 
     /**
@@ -250,11 +254,19 @@ class Product extends BaseModel
     public function variationAttributeSwatchesForProductList()
     {
         return $this->hasMany(ProductVariation::class, 'configurable_product_id')
-            ->join('ec_product_variation_items', 'ec_product_variation_items.variation_id', '=',
-                'ec_product_variations.id')
+            ->join(
+                'ec_product_variation_items',
+                'ec_product_variation_items.variation_id',
+                '=',
+                'ec_product_variations.id'
+            )
             ->join('ec_product_attributes', 'ec_product_attributes.id', '=', 'ec_product_variation_items.attribute_id')
-            ->join('ec_product_attribute_sets', 'ec_product_attribute_sets.id', '=',
-                'ec_product_attributes.attribute_set_id')
+            ->join(
+                'ec_product_attribute_sets',
+                'ec_product_attribute_sets.id',
+                '=',
+                'ec_product_attributes.attribute_set_id'
+            )
             ->where('ec_product_attribute_sets.status', BaseStatusEnum::PUBLISHED)
             ->where('ec_product_attribute_sets.is_use_in_product_listing', 1);
     }
@@ -389,7 +401,7 @@ class Product extends BaseModel
         if ($flashSale && $flashSale->pivot->quantity > $flashSale->pivot->sold) {
             return $this->getComparePrice($flashSale->pivot->price, $this->sale_price);
         }
-        
+
         return $this->getComparePrice($this->price, $this->sale_price);
     }
 
@@ -406,7 +418,8 @@ class Product extends BaseModel
             }
 
             if ((!empty($this->start_date) && $this->start_date > now()) ||
-                (!empty($this->end_date && $this->end_date < now()))) {
+                (!empty($this->end_date && $this->end_date < now()))
+            ) {
                 return $price;
             }
 
@@ -432,8 +445,12 @@ class Product extends BaseModel
     {
         return $this
             ->belongsToMany(ProductAttribute::class, 'ec_product_with_attribute', 'product_id', 'attribute_id')
-            ->join('ec_product_attribute_sets', 'ec_product_attribute_sets.id', '=',
-                'ec_product_attributes.attribute_set_id')
+            ->join(
+                'ec_product_attribute_sets',
+                'ec_product_attribute_sets.id',
+                '=',
+                'ec_product_attributes.attribute_set_id'
+            )
             ->where('ec_product_attribute_sets.status', BaseStatusEnum::PUBLISHED)
             ->where('ec_product_attribute_sets.is_use_in_product_listing', 1)
             ->select([
@@ -476,8 +493,12 @@ class Product extends BaseModel
         return $this->belongsToMany(Discount::class, 'ec_discount_products', 'product_id')
             ->where('type', 'promotion')
             ->where('start_date', '<=', now())
-            ->leftJoin('ec_discount_product_collections', 'ec_discounts.id', '=',
-                'ec_discount_product_collections.discount_id')
+            ->leftJoin(
+                'ec_discount_product_collections',
+                'ec_discounts.id',
+                '=',
+                'ec_discount_product_collections.discount_id'
+            )
             ->leftJoin('ec_discount_customers', 'ec_discounts.id', '=', 'ec_discount_customers.discount_id')
             ->where(function ($query) {
                 /**
