@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Botble\Base\Enums\BaseStatusEnum;
-use App\Http\Resources\{CategoryResource, MenuNodeResource, ProductResource};
+use App\Http\Resources\{CategoryResource, MenuNodeResource, ProductResource, BrandResource, ProductAttributeSetResource};
 use Botble\Ecommerce\Models\{Product, ProductCategory};
 use Botble\Menu\Repositories\Interfaces\{MenuLocationInterface, MenuNodeInterface};
 use Botble\Slug\Repositories\Interfaces\SlugInterface;
-use Botble\Ecommerce\Repositories\Interfaces\{ProductVariationInterface, ProductVariationItemInterface, ProductInterface, ProductCategoryInterface};
+use Botble\Ecommerce\Repositories\Interfaces\{ProductVariationInterface, ProductAttributeSetInterface, ProductInterface, ProductCategoryInterface};
 use Illuminate\Http\Request;
 use SlugHelper;
 
@@ -18,6 +18,10 @@ class ShopWiseController extends Controller
 {
 
 
+    /**
+     * @var ProductAttributeSetRepository
+     */
+    protected $productAttributeSetRepository;
 
     /**
      * @var ProductCategoryInterface
@@ -52,13 +56,15 @@ class ShopWiseController extends Controller
         ProductInterface $productRepository,
         MenuNodeInterface $menuNodeRepository,
         SlugInterface $slugRepository,
-        ProductCategoryInterface $categoryProductRepository
+        ProductCategoryInterface $categoryProductRepository,
+        ProductAttributeSetInterface $productAttributeSetRepository
     ) {
         $this->menuLocationRepository = $menuLocationRepository;
         $this->menuNodeRepository = $menuNodeRepository;
         $this->slugRepository = $slugRepository;
         $this->productRepository = $productRepository;
         $this->categoryProductRepository = $categoryProductRepository;
+        $this->productAttributeSetRepository = $productAttributeSetRepository;
     }
 
 
@@ -275,5 +281,38 @@ class ShopWiseController extends Controller
 
         not_found:
         return response()->json(["message" => "Không tìm thấy danh mục"], 404);
+    }
+    
+    /**
+     * 
+     */
+    public function getAllBrands(){
+
+        $brands = get_all_brands(['status' => \Botble\Base\Enums\BaseStatusEnum::PUBLISHED], [], ['products']);
+
+
+        return BrandResource::collection($brands);
+    }
+
+    /**
+     * 
+     */
+    public function getAllAttributeSet(){
+
+        $attributeSets = $this->productAttributeSetRepository
+        ->advancedGet([
+            'condition' => [
+                'status'        => BaseStatusEnum::PUBLISHED,
+                'is_searchable' => 1,
+            ],
+            'order_by'  => [
+                'order' => 'ASC',
+            ],
+            'with'      => [
+                'attributes',
+            ],
+        ]);
+
+        return  ProductAttributeSetResource::collection($attributeSets);
     }
 }

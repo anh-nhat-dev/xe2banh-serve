@@ -20,4 +20,6 @@ Route::group(['namespace' => 'App\Http\Controllers\Api', 'middleware' => ['api',
     Route::get("/products", "ShopWiseController@getProducts");
     Route::get("/products/{slug}", "ShopWiseController@getProduct");
     Route::get("/products/{id}/related-products", "ShopWiseController@getRelatedProducts");
+    Route::get("/brands", "ShopWiseController@getAllBrands");
+    Route::get("/attribute-set", "ShopWiseController@getAllAttributeSet");
 });
