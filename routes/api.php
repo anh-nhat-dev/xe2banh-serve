@@ -16,10 +16,12 @@ Route::group(['namespace' => 'App\Http\Controllers\Api', 'middleware' => ['api',
     Route::get("/categories/{slug}", "ShopWiseController@getCategoryBySlug");
     Route::get("/menu-by-location", "ShopWiseController@getMenuNodeByLocation");
     Route::get("/featured-product-categories", "ShopWiseController@getFeaturedProductCatagories");
-    Route::get("/products-with-category", "ShopWiseController@getProductsWithCategory");
+    Route::get("/products-featured", "ShopWiseController@getProductsFeatured");
     Route::get("/products", "ShopWiseController@getProducts");
     Route::get("/products/{slug}", "ShopWiseController@getProduct");
     Route::get("/products/{id}/related-products", "ShopWiseController@getRelatedProducts");
     Route::get("/brands", "ShopWiseController@getAllBrands");
     Route::get("/attribute-set", "ShopWiseController@getAllAttributeSet");
+    Route::get("/categories/{id}/products", "ShopWiseController@getProductCategory");
+    Route::get("/sliders/{key}", "ShopWiseController@getSlider");
 });

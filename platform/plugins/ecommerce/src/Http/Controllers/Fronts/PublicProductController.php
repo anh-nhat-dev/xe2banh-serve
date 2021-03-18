@@ -112,20 +112,30 @@ class PublicProductController
                 ->setDescription(__('Products: ') . '"' . $request->get('q') . '"');
             Theme::breadcrumb()->add(__('Home'), url('/'))->add(__('Search'), route('public.products'));
 
-            return Theme::scope('ecommerce.search', compact('products', 'query'),
-                'plugins/ecommerce::themes.search')->render();
+            return Theme::scope(
+                'ecommerce.search',
+                compact('products', 'query'),
+                'plugins/ecommerce::themes.search'
+            )->render();
         }
 
-        $products = $productService->getProduct($request, null, null,
-            ['slugable', 'variations', 'productCollections', 'variationAttributeSwatchesForProductList', 'promotions']);
+        $products = $productService->getProduct(
+            $request,
+            null,
+            null,
+            ['slugable', 'variations', 'productCollections', 'variationAttributeSwatchesForProductList', 'promotions']
+        );
 
         Theme::breadcrumb()->add(__('Home'), url('/'))->add(__('Products'), route('public.products'));
         SeoHelper::setTitle(__('Products'))->setDescription(__('Products'));
 
         do_action(PRODUCT_MODULE_SCREEN_NAME);
 
-        return Theme::scope('ecommerce.products', compact('products'),
-            'plugins/ecommerce::themes.products')->render();
+        return Theme::scope(
+            'ecommerce.products',
+            compact('products'),
+            'plugins/ecommerce::themes.products'
+        )->render();
     }
 
     /**
@@ -196,8 +206,10 @@ class PublicProductController
         Theme::breadcrumb()->add($product->name, $product->url);
 
         admin_bar()
-            ->registerLink(trans('plugins/ecommerce::products.edit_this_product'),
-                route('products.edit', $product->id));
+            ->registerLink(
+                trans('plugins/ecommerce::products.edit_this_product'),
+                route('products.edit', $product->id)
+            );
 
         do_action(BASE_ACTION_PUBLIC_RENDER_SINGLE, PRODUCT_CATEGORY_MODULE_SCREEN_NAME, $product);
 
@@ -274,8 +286,11 @@ class PublicProductController
 
         do_action(BASE_ACTION_PUBLIC_RENDER_SINGLE, PRODUCT_TAG_MODULE_SCREEN_NAME, $tag);
 
-        return Theme::scope('ecommerce.product-tag', compact('tag', 'products'),
-            'plugins/ecommerce::themes.product-tag')->render();
+        return Theme::scope(
+            'ecommerce.product-tag',
+            compact('tag', 'products'),
+            'plugins/ecommerce::themes.product-tag'
+        )->render();
     }
 
     /**
@@ -320,8 +335,12 @@ class PublicProductController
             return redirect()->to($category->url);
         }
 
-        $products = $getProductService->getProduct($request, $category->id, null,
-            ['slugable', 'variations', 'productCollections', 'variationAttributeSwatchesForProductList', 'promotions']);
+        $products = $getProductService->getProduct(
+            $request,
+            $category->id,
+            null,
+            ['slugable', 'variations', 'productCollections', 'variationAttributeSwatchesForProductList', 'promotions']
+        );
 
         SeoHelper::setTitle($category->name)->setDescription($category->description);
 
@@ -342,8 +361,11 @@ class PublicProductController
 
         do_action(BASE_ACTION_PUBLIC_RENDER_SINGLE, PRODUCT_CATEGORY_MODULE_SCREEN_NAME, $category);
 
-        return Theme::scope('ecommerce.product-category', compact('category', 'products'),
-            'plugins/ecommerce::themes.product-category')->render();
+        return Theme::scope(
+            'ecommerce.product-category',
+            compact('category', 'products'),
+            'plugins/ecommerce::themes.product-category'
+        )->render();
     }
 
     /**
@@ -511,8 +533,11 @@ class PublicProductController
             ['slugable', 'variations', 'productCollections', 'variationAttributeSwatchesForProductList', 'promotions']
         );
 
-        return Theme::scope('ecommerce.brand', compact('brand', 'products'),
-            'plugins/ecommerce::themes.brand')->render();
+        return Theme::scope(
+            'ecommerce.brand',
+            compact('brand', 'products'),
+            'plugins/ecommerce::themes.brand'
+        )->render();
     }
 
     /**
@@ -543,7 +568,10 @@ class PublicProductController
                 ->first();
         }
 
-        return Theme::scope('ecommerce.order-tracking', compact('order'),
-            'plugins/ecommerce::themes.order-tracking')->render();
+        return Theme::scope(
+            'ecommerce.order-tracking',
+            compact('order'),
+            'plugins/ecommerce::themes.order-tracking'
+        )->render();
     }
 }

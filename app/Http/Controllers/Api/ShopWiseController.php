@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Botble\Base\Enums\BaseStatusEnum;
-use App\Http\Resources\{CategoryResource, MenuNodeResource, ProductResource, BrandResource, ProductAttributeSetResource};
+use App\Http\Resources\{CategoryResource, MenuNodeResource, ProductResource, BrandResource, ProductAttributeSetResource, SimpleSliderResource};
 use Botble\Ecommerce\Models\{Product, ProductCategory};
 use Botble\Menu\Repositories\Interfaces\{MenuLocationInterface, MenuNodeInterface};
 use Botble\Slug\Repositories\Interfaces\SlugInterface;
-use Botble\Ecommerce\Repositories\Interfaces\{ProductVariationInterface, ProductAttributeSetInterface, ProductInterface, ProductCategoryInterface};
+use Botble\Ecommerce\Services\Products\GetProductService;
+use Botble\Ecommerce\Repositories\Interfaces\{ProductAttributeSetInterface, ProductInterface, ProductCategoryInterface};
+use Botble\SimpleSlider\Repositories\Interfaces\SimpleSliderInterface;
 use Illuminate\Http\Request;
 use SlugHelper;
 
@@ -107,14 +109,19 @@ class ShopWiseController extends Controller
     /**
      * 
      */
-    public function getProductsWithCategory(Request $request)
+    public function getProductsFeatured(Request $request)
     {
         $params = [
             'condition' => [
                 'ec_products.is_variation' => 0,
                 'ec_products.status'       => \Botble\Base\Enums\BaseStatusEnum::PUBLISHED,
+                'ec_products.is_featured'  => 1
             ],
-            'take'      => 10,
+            'take'      => $request->input("take"),
+            'paginate'  => [
+                'per_page'      => $request->input("limit"),
+                'current_paged' => $request->input("page"),
+            ],
             'order_by'  => [
                 'ec_products.created_at' => 'DESC',
             ],
@@ -135,10 +142,6 @@ class ShopWiseController extends Controller
             ];
         }
 
-        if ($request->has("is_featured")) {
-            $params["condition"]["ec_products.is_featured"]  = 1;
-        }
-
         $products = app(ProductInterface::class)->getProductsWithCategory($params);
 
         return ProductResource::collection($products);
@@ -147,47 +150,31 @@ class ShopWiseController extends Controller
     /**
      * 
      */
-    public function getProducts(Request $request)
+    public function getProducts(Request $request, GetProductService $productService)
     {
+        $products = $productService->getProduct($request);
         $request->request->add(["is_single" => false]);
-
-        $params = [
-            'condition' => [
-                'ec_products.status'       => \Botble\Base\Enums\BaseStatusEnum::PUBLISHED,
-                'ec_products.is_variation' => 0,
-            ],
-            'order_by'  => [
-                'ec_products.order'      => 'ASC',
-                'ec_products.created_at' => 'DESC',
-            ],
-            'take'      => null,
-            'paginate'  => [
-                'per_page'      => $request->input("limit"),
-                'current_paged' => $request->input("page"),
-            ],
-            'select'    => [
-                'ec_products.*',
-            ],
-            // 'with' => ['slugable'],
-        ];
-
-
-        if ($request->has('limit')) {
-            $params["paginate"]["per_page"] = $request->input("limit");
-        }
-
-        if ($request->has('page')) {
-            $params["paginate"]["current_paged"] = $request->input("page");
-        }
-
-        if ($request->has('take')) {
-            $params["paginate"]["take"] = $request->input("take");
-        }
-
-        $products = app(ProductInterface::class)->getProducts($params);
-
         return ProductResource::collection($products);
         // return response()->json(["products" => $products]);
+    }
+
+    /**
+     * 
+     */
+    public function getProductCategory(
+        $id,
+        Request $request,
+        GetProductService $getProductService
+    ) {
+
+        $products = $getProductService->getProduct(
+            $request,
+            $id,
+            null,
+            ['slugable', 'variations', 'productCollections', 'variationAttributeSwatchesForProductList', 'promotions']
+        );
+
+        return ProductResource::collection($products);
     }
 
 
@@ -282,11 +269,12 @@ class ShopWiseController extends Controller
         not_found:
         return response()->json(["message" => "Không tìm thấy danh mục"], 404);
     }
-    
+
     /**
      * 
      */
-    public function getAllBrands(){
+    public function getAllBrands()
+    {
 
         $brands = get_all_brands(['status' => \Botble\Base\Enums\BaseStatusEnum::PUBLISHED], [], ['products']);
 
@@ -297,22 +285,37 @@ class ShopWiseController extends Controller
     /**
      * 
      */
-    public function getAllAttributeSet(){
+    public function getAllAttributeSet()
+    {
 
         $attributeSets = $this->productAttributeSetRepository
-        ->advancedGet([
-            'condition' => [
-                'status'        => BaseStatusEnum::PUBLISHED,
-                'is_searchable' => 1,
-            ],
-            'order_by'  => [
-                'order' => 'ASC',
-            ],
-            'with'      => [
-                'attributes',
-            ],
-        ]);
+            ->advancedGet([
+                'condition' => [
+                    'status'        => BaseStatusEnum::PUBLISHED,
+                    'is_searchable' => 1,
+                ],
+                'order_by'  => [
+                    'order' => 'ASC',
+                ],
+                'with'      => [
+                    'attributes',
+                ],
+            ]);
 
         return  ProductAttributeSetResource::collection($attributeSets);
+    }
+
+    /**
+     * 
+     */
+    public function getSlider($key)
+    {
+
+        $slider = app(SimpleSliderInterface::class)->getFirstBy(["key" => $key]);
+        if (empty($slider)) goto not_found;
+        return new SimpleSliderResource($slider);
+
+        not_found:
+        return response()->json(["message" => "Không tìm thấy slider"], 404);
     }
 }

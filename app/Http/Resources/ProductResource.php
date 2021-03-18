@@ -47,6 +47,6 @@ class ProductResource extends JsonResource
             "categories" => CategoryResource::collection($this->categories)
         ];
 
-        return !isset($is_single) ? $normal_response : array_merge($normal_response, $advanced_response);
+        return empty($is_single) ? $normal_response : array_merge($normal_response, $advanced_response);
     }
 }
