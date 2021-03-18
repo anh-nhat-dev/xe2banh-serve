@@ -16,7 +16,7 @@ use SlugHelper;
 
 
 
-class ShopWiseController extends Controller
+class EcommerceController extends Controller
 {
 
 
@@ -181,22 +181,15 @@ class ShopWiseController extends Controller
     /**
      * 
      */
-    public function getProduct(Request $request, $slug)
+    public function getProduct(Request $request, $id)
     {
 
         $request->request->add(["is_single" => true]);
 
-        $slug = $this->slugRepository->getFirstBy([
-            'key'            => $slug,
-            'reference_type' => Product::class,
-            'prefix'         => SlugHelper::getPrefix(Product::class),
-        ]);
-
-        if (empty($slug)) goto not_found;
-
         $condition = [
-            'ec_products.id'     => $slug->reference_id,
+            'ec_products.id'     => $id,
             'ec_products.status' => BaseStatusEnum::PUBLISHED,
+            "ec_products.is_variation" => 0
         ];
 
         $product = get_products([
@@ -222,7 +215,7 @@ class ShopWiseController extends Controller
     /**
      * 
      */
-    public function getRelatedProducts(Request $request, $id)
+    public function getRelatedProducts($id)
     {
 
         $condition = [
@@ -244,19 +237,11 @@ class ShopWiseController extends Controller
     /**
      * 
      */
-    public function getCategoryBySlug($slug)
+    public function getCategory($id)
     {
-        $slug = $this->slugRepository->getFirstBy([
-            'key'            => $slug,
-            'reference_type' => ProductCategory::class,
-            'prefix'         => SlugHelper::getPrefix(ProductCategory::class),
-        ]);
-
-
-        if (empty($slug)) goto not_found;
-
+    
         $condition = [
-            'id'     => $slug->reference_id,
+            'id'     => $id,
             'status' => BaseStatusEnum::PUBLISHED,
         ];
 
@@ -318,4 +303,5 @@ class ShopWiseController extends Controller
         not_found:
         return response()->json(["message" => "Không tìm thấy slider"], 404);
     }
+
 }

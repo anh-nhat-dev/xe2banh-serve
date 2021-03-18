@@ -3,9 +3,8 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\{ProductAttributeResource};
 
-class ProductAttributeSetResource extends JsonResource
+class PostResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,12 +14,10 @@ class ProductAttributeSetResource extends JsonResource
      */
     public function toArray($request)
     {
-        $is_single = $request->input('is_single');
-
         return [
             "id" => $this->id,
-            "title" => $this->title,
-            "attributes" => ProductAttributeResource::collection($this->attributes)
+            "name" => $this->name,
+            "slug" => $this->slug,
         ];
     }
 }

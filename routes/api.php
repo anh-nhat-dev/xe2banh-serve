@@ -12,16 +12,19 @@
 */
 
 Route::group(['namespace' => 'App\Http\Controllers\Api', 'middleware' => ['api', 'core']], function () {
-    Route::get("/categories", "ShopWiseController@getCategories");
-    Route::get("/categories/{slug}", "ShopWiseController@getCategoryBySlug");
-    Route::get("/menu-by-location", "ShopWiseController@getMenuNodeByLocation");
-    Route::get("/featured-product-categories", "ShopWiseController@getFeaturedProductCatagories");
-    Route::get("/products-featured", "ShopWiseController@getProductsFeatured");
-    Route::get("/products", "ShopWiseController@getProducts");
-    Route::get("/products/{slug}", "ShopWiseController@getProduct");
-    Route::get("/products/{id}/related-products", "ShopWiseController@getRelatedProducts");
-    Route::get("/brands", "ShopWiseController@getAllBrands");
-    Route::get("/attribute-set", "ShopWiseController@getAllAttributeSet");
-    Route::get("/categories/{id}/products", "ShopWiseController@getProductCategory");
-    Route::get("/sliders/{key}", "ShopWiseController@getSlider");
+    Route::get("/categories", "EcommerceController@getCategories");
+    Route::get("/categories/{id}", "EcommerceController@getCategory");
+    Route::get("/menu-by-location", "EcommerceController@getMenuNodeByLocation");
+    Route::get("/featured-product-categories", "EcommerceController@getFeaturedProductCatagories");
+    Route::get("/products-featured", "EcommerceController@getProductsFeatured");
+    Route::get("/products", "EcommerceController@getProducts");
+    Route::get("/products/{id}", "EcommerceController@getProduct");
+    Route::get("/products/{id}/related-products", "EcommerceController@getRelatedProducts");
+    Route::get("/brands", "EcommerceController@getAllBrands");
+    Route::get("/attribute-set", "EcommerceController@getAllAttributeSet");
+    Route::get("/categories/{id}/products", "EcommerceController@getProductCategory");
+    Route::get("/sliders/{key}", "EcommerceController@getSlider");
+    Route::get("/posts-featured", "BlogController@getPostFeatured");
+    Route::get("/posts/{id}", "BlogController@getPost");
 });
+   
