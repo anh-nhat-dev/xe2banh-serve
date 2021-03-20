@@ -21,7 +21,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['api.nhatdev.xyz'],
+    'allowed_origins' => ['nhatdev.xyz'],
 
     'allowed_origins_patterns' => ["*"],
 
