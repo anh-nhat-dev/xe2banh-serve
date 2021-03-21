@@ -128,4 +128,13 @@ class BlogController extends Controller
 
         return PostResource::collection($posts);
     }
+
+    /**
+     * 
+     */
+    public function getCategory(Request $request, $id)  {
+        $category =  app(CategoryInterface::class)->getCategoryById($id);
+
+        return  new BlogCategoryResource($category);
+    }
 }
