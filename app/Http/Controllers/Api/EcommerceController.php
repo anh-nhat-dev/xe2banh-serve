@@ -5,14 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Botble\Base\Enums\BaseStatusEnum;
 use App\Http\Resources\{CategoryResource, MenuNodeResource, ProductResource, BrandResource, ProductAttributeSetResource, SimpleSliderResource};
-use Botble\Ecommerce\Models\{Product, ProductCategory};
 use Botble\Menu\Repositories\Interfaces\{MenuLocationInterface, MenuNodeInterface};
 use Botble\Slug\Repositories\Interfaces\SlugInterface;
 use Botble\Ecommerce\Services\Products\GetProductService;
-use Botble\Ecommerce\Repositories\Interfaces\{ProductAttributeSetInterface, ProductInterface, ProductCategoryInterface};
+use Botble\Ecommerce\Repositories\Interfaces\{ProductAttributeSetInterface, ProductInterface, ProductCategoryInterface, ReviewInterface};
 use Botble\SimpleSlider\Repositories\Interfaces\SimpleSliderInterface;
 use Illuminate\Http\Request;
-use SlugHelper;
+use DB;
 
 
 
@@ -239,7 +238,7 @@ class EcommerceController extends Controller
      */
     public function getCategory($id)
     {
-    
+
         $condition = [
             'id'     => $id,
             'status' => BaseStatusEnum::PUBLISHED,
@@ -304,4 +303,30 @@ class EcommerceController extends Controller
         return response()->json(["message" => "Không tìm thấy slider"], 404);
     }
 
+
+    /**
+     * 
+     */
+    public function getRatingsProduct($id)
+    {
+        try {
+            $ratings = app(ReviewInterface::class)->getModel()
+                ->select('star', DB::raw('count(id) as total'))
+                ->where('product_id', $id)
+                ->groupBy("star")
+                ->get();
+
+            $totalRating = $ratings->sum('total');
+
+            $data =  collect([5, 4, 3, 2, 1])->map(function ($star) use ($ratings, $totalRating) {
+                $total =  $ratings->firstWhere("star", $star)->total ?? 0;
+                $percent = ceil(($total / $totalRating) * 100);
+                return compact('star', 'total', 'percent');
+            });
+
+            return  response()->json(compact('data'));
+        } catch (\Throwable $th) {
+            return  response()->json(["error" => true], 500);
+        }
+    }
 }

@@ -13,12 +13,18 @@ if (!function_exists('render_review_form')) {
      */
     function render_review_form($productId)
     {
-        Theme::asset()->container('footer')->usePath(false)->add('star-rating-js',
-            asset('vendor/core/plugins/ecommerce/libraries/star-rating/star-rating.min.js'));
-        Theme::asset()->container('footer')->usePath(false)->add('review-js',
-            asset('vendor/core/plugins/ecommerce/js/review.js'));
-        Theme::asset()->usePath(false)->add('star-rating-css',
-            asset('vendor/core/plugins/ecommerce/libraries/star-rating/star-rating.min.css'));
+        Theme::asset()->container('footer')->usePath(false)->add(
+            'star-rating-js',
+            asset('vendor/core/plugins/ecommerce/libraries/star-rating/star-rating.min.js')
+        );
+        Theme::asset()->container('footer')->usePath(false)->add(
+            'review-js',
+            asset('vendor/core/plugins/ecommerce/js/review.js')
+        );
+        Theme::asset()->usePath(false)->add(
+            'star-rating-css',
+            asset('vendor/core/plugins/ecommerce/libraries/star-rating/star-rating.min.css')
+        );
         Theme::asset()->usePath(false)->add('review-css', asset('vendor/core/plugins/ecommerce/css/review.css'));
 
         $reviews = app(ReviewInterface::class)->allBy([
