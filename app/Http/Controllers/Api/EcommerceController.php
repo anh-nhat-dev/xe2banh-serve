@@ -341,8 +341,10 @@ class EcommerceController extends Controller
             app(ReviewInterface::class)->create($request->input());
 
             return  response()->json(["error" => false, "message" => "Tạo bình luận thành công"]);
+
         } catch (\Throwable $th) {
-            return  response()->json(["error" => true, "message" => "Tạo bình luận không thành công"], 500);
+            
+            return  response()->json(["error" => true, "message" => "Tạo bình luận không thành công", "data"  => $request->input()], 500);
         }
     }
 

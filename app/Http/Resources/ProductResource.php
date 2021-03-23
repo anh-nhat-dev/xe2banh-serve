@@ -29,7 +29,8 @@ class ProductResource extends JsonResource
             "sale_price" => $this->sale_price,
             "image"  => RvMedia::getImageUrl($this->image, null, false),
             "front_sale_price" => $this->front_sale_price,
-            "promotions" => $this->promotions
+            "promotions" => $this->promotions,
+            "out_of_stock" => $this->isOutOfStock()
         ];
 
         $advanced_response = [
