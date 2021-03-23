@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Botble\Base\Enums\BaseStatusEnum;
-use App\Http\Resources\{CategoryResource, MenuNodeResource, ProductResource, BrandResource, ProductAttributeSetResource, SimpleSliderResource};
+use App\Http\Resources\{CategoryResource, MenuNodeResource, ProductResource, BrandResource, ProductAttributeSetResource, SimpleSliderResource, ReviewResource};
 use Botble\Menu\Repositories\Interfaces\{MenuLocationInterface, MenuNodeInterface};
 use Botble\Slug\Repositories\Interfaces\SlugInterface;
 use Botble\Ecommerce\Services\Products\GetProductService;
 use Botble\Ecommerce\Repositories\Interfaces\{ProductAttributeSetInterface, ProductInterface, ProductCategoryInterface, ReviewInterface};
 use Botble\SimpleSlider\Repositories\Interfaces\SimpleSliderInterface;
 use Illuminate\Http\Request;
+use App\Http\Requests\ReviewRequest;
 use DB;
 
 
@@ -320,13 +321,42 @@ class EcommerceController extends Controller
 
             $data =  collect([5, 4, 3, 2, 1])->map(function ($star) use ($ratings, $totalRating) {
                 $total =  $ratings->firstWhere("star", $star)->total ?? 0;
-                $percent = ceil(($total / $totalRating) * 100);
+                $percent = $totalRating ?  ceil(($total / $totalRating) * 100) : 0;
                 return compact('star', 'total', 'percent');
             });
 
             return  response()->json(compact('data'));
         } catch (\Throwable $th) {
+
             return  response()->json(["error" => true], 500);
         }
+    }
+
+    /**
+     * 
+     */
+    public function postCreateReview(ReviewRequest $request)
+    {
+        try {
+            app(ReviewInterface::class)->create($request->input());
+
+            return  response()->json(["error" => false, "message" => "Tạo bình luận thành công"]);
+        } catch (\Throwable $th) {
+            return  response()->json(["error" => true, "message" => "Tạo bình luận không thành công"], 500);
+        }
+    }
+
+    /**
+     * 
+     */
+    public function getProductReviews($id)
+    {
+        $reviews = app(ReviewInterface::class)->getModel()
+            ->where('product_id', $id)
+            ->where('status', BaseStatusEnum::PUBLISHED)
+            ->orderBy('id', 'desc')
+            ->paginate(10);
+
+        return ReviewResource::collection($reviews);
     }
 }

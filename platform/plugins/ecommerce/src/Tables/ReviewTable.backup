@@ -62,7 +62,7 @@ class ReviewTable extends TableAbstract
                 return null;
             })
             ->editColumn('customer_id', function ($item) {
-                return $item->user->name ?? 'SDT: <b>' . $item->phone . '</b><br>Fullname: <b>' .  $item->full_name . '</b>';
+                return $item->user->name ?? 'Email: <b>' . $item->email . '</b><br>Fullname: <b>' .  $item->full_name . '</b>';
             })
             ->editColumn('checkbox', function ($item) {
                 return $this->getCheckbox($item->id);
@@ -93,7 +93,7 @@ class ReviewTable extends TableAbstract
             'ec_reviews.star',
             'ec_reviews.comment',
             'ec_reviews.product_id',
-            'ec_reviews.phone',
+            'ec_reviews.email',
             'ec_reviews.full_name',
             'ec_reviews.customer_id',
             'ec_reviews.status',
