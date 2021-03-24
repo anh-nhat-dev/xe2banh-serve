@@ -15,6 +15,9 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         //
+        $this->app->make('config')->set([
+            'session.cookie'  => env('SESSION_COOKIE')
+        ]);
     }
 
     /**

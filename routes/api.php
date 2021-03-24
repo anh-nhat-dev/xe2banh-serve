@@ -13,6 +13,8 @@
 
 Route::group(['namespace' => 'App\Http\Controllers\Api', 'middleware' => ['api']], function () {
     Route::get("/products/{id}/review-star", "EcommerceController@getRatingsProduct");
+    Route::get("/cart", "EcommerceController@getCart");
+    Route::post("/add-to-cart", "EcommerceController@addToCart");
     Route::get("/products/{id}/reviews", "EcommerceController@getproductReviews");
     Route::post("/add-reviews", "EcommerceController@postCreateReview");
     Route::get("/categories", "EcommerceController@getCategories");

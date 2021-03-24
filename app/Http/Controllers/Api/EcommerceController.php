@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Botble\Base\Enums\BaseStatusEnum;
+use Botble\Base\Http\Responses\BaseHttpResponse;
 use App\Http\Resources\{CategoryResource, MenuNodeResource, ProductResource, BrandResource, ProductAttributeSetResource, SimpleSliderResource, ReviewResource};
 use Botble\Menu\Repositories\Interfaces\{MenuLocationInterface, MenuNodeInterface};
 use Botble\Slug\Repositories\Interfaces\SlugInterface;
@@ -12,8 +13,11 @@ use Botble\Ecommerce\Repositories\Interfaces\{ProductAttributeSetInterface, Prod
 use Botble\SimpleSlider\Repositories\Interfaces\SimpleSliderInterface;
 use Illuminate\Http\Request;
 use App\Http\Requests\ReviewRequest;
+use App\Http\Requests\CartRequest;
 use DB;
-
+use Cart;
+use EcommerceHelper;
+use OrderHelper;
 
 
 class EcommerceController extends Controller
@@ -181,57 +185,69 @@ class EcommerceController extends Controller
     /**
      * 
      */
-    public function getProduct(Request $request, $id)
+    public function getProduct(Request $request, BaseHttpResponse $response, $id)
     {
 
-        $request->request->add(["is_single" => true]);
+        try {
+            $request->request->add(["is_single" => true]);
 
-        $condition = [
-            'ec_products.id'     => $id,
-            'ec_products.status' => BaseStatusEnum::PUBLISHED,
-            "ec_products.is_variation" => 0
-        ];
+            $condition = [
+                'ec_products.id'     => $id,
+                'ec_products.status' => BaseStatusEnum::PUBLISHED,
+                "ec_products.is_variation" => 0
+            ];
 
-        $product = get_products([
-            'condition' => $condition,
-            'take'      => 1,
-            'with'      => [
-                "productAttributes",
-                "variations",
-                "variations.productAttributes",
-                "variations.product",
-                "promotions"
-            ],
-        ]);
+            $product = get_products([
+                'condition' => $condition,
+                'take'      => 1,
+                'with'      => [
+                    "productAttributes",
+                    "variations",
+                    "variations.productAttributes",
+                    "variations.product",
+                    "promotions"
+                ],
+            ]);
 
-        if (empty($product)) goto not_found;
+            if (empty($product)) return $response->setError()
+                ->setCode(400)
+                ->setMessage('Không tìm thấy sản phẩm');
 
-        return new ProductResource($product);
+            return  $response->setData(new ProductResource($product));
+        } catch (\Throwable $th) {
 
-        not_found:
-        return response()->json(["message" => "Không tìm thấy sản phẩm"], 404);
+            return $response->setError()
+                ->setMessage($th->getMessage())
+                ->setCode(500);
+        }
     }
 
     /**
      * 
      */
-    public function getRelatedProducts($id)
+    public function getRelatedProducts(BaseHttpResponse $response, $id)
     {
+        try {
+            $condition = [
+                'ec_products.id'     => $id,
+                'ec_products.status' => BaseStatusEnum::PUBLISHED,
+            ];
 
-        $condition = [
-            'ec_products.id'     => $id,
-            'ec_products.status' => BaseStatusEnum::PUBLISHED,
-        ];
+            $product = get_products([
+                'condition' => $condition,
+                'take'      => 1,
 
-        $product = get_products([
-            'condition' => $condition,
-            'take'      => 1,
+            ]);
 
-        ]);
+            $products = get_related_products($product);
 
-        $products = get_related_products($product);
+            return $response->setData(ProductResource::collection($products));
+        } catch (\Throwable $th) {
 
-        return ProductResource::collection($products);
+            return $response->setError()
+                ->setMessage($th->getMessage())
+                ->setCode(500);
+        }
     }
 
     /**
@@ -341,9 +357,8 @@ class EcommerceController extends Controller
             app(ReviewInterface::class)->create($request->input());
 
             return  response()->json(["error" => false, "message" => "Tạo bình luận thành công"]);
-
         } catch (\Throwable $th) {
-            
+
             return  response()->json(["error" => true, "message" => "Tạo bình luận không thành công", "data"  => $request->input()], 500);
         }
     }
@@ -359,6 +374,123 @@ class EcommerceController extends Controller
             ->orderBy('id', 'desc')
             ->paginate(10);
 
+
+
         return ReviewResource::collection($reviews);
+    }
+
+    /**
+     * 
+     */
+    public function getCart(BaseHttpResponse $response)
+    {
+        try {
+            $cartItems =  [];
+
+            foreach (Cart::instance('cart')->content() as $item) {
+                array_push($cartItems, $item);
+            }
+
+            $data = [
+                "content"       => $cartItems,
+                "count"         => Cart::instance('cart')->count(),
+                "total_price"   => format_price(Cart::instance('cart')->rawSubTotal()),
+                "token"         => OrderHelper::getOrderSessionToken()
+            ];
+
+            return $response->setData($data);
+        } catch (\Throwable $th) {
+            return $response->setError()
+                ->setMessage($th->getMessage())
+                ->setCode(500);
+        }
+    }
+
+
+    /**
+     * 
+     */
+    public function addToCart(CartRequest $request, BaseHttpResponse $response)
+    {
+        try {
+            if (!EcommerceHelper::isCartEnabled()) {
+                return $response->setError(true);
+            }
+
+            $product = $this->productRepository->findById($request->id);
+
+            if (!$product) {
+                return $response
+                    ->setError()
+                    ->setMessage(__('This product is out of stock or not exists!'))
+                    ->toApiResponse();
+            }
+
+            if ($product->variations->count() > 0 && !$product->is_variation) {
+                $product = $product->defaultVariation->product;
+            }
+
+            if ($product->isOutOfStock()) {
+                return $response
+                    ->setError()
+                    ->setMessage(__('Product :product is out of stock!', ['product' => $product->original_product->name]));
+            }
+            $maxQuantity = $product->quantity;
+
+            if (!$product->canAddToCart($request->input('qty', 1))) {
+                return $response
+                    ->setError()
+                    ->setMessage(__('Maximum quantity is ' . $maxQuantity . '!'));
+            }
+
+            $product->quantity -= $request->input('qty', 1);
+
+            $outOfQuantity = false;
+
+            foreach (Cart::instance('cart')->content() as $item) {
+                if ($item->id == $product->id) {
+                    $originalQuantity = $product->quantity;
+                    $product->quantity = (int)$product->quantity - $item->qty;
+                    if ($product->quantity < 0) {
+                        $product->quantity = 0;
+                    }
+                    if ($product->isOutOfStock()) {
+                        $outOfQuantity = true;
+                        break;
+                    }
+                    $product->quantity = $originalQuantity;
+                }
+            }
+
+            if ($outOfQuantity) {
+                return $response
+                    ->setError()
+                    ->setMessage(__('Product :product is out of stock!', ['product' => $product->original_product->name]));
+            }
+
+            $cartItems = OrderHelper::handleAddCart($product, $request);
+
+            $token = OrderHelper::getOrderSessionToken();
+
+            $nextUrl = route('public.checkout.information', $token);
+
+            return $response
+                ->setData([
+                    'status'      => true,
+                    'count'       => Cart::instance('cart')->count(),
+                    'total_price' => format_price(Cart::instance('cart')->rawSubTotal()),
+                    'content'     => $cartItems,
+                    'next_url'    => $nextUrl,
+                ])
+                ->setMessage(__(
+                    'Added product :product to cart successfully!',
+                    ['product' => $product->original_product->name]
+                ));
+        } catch (\Throwable $th) {
+            return $response->setError()
+                ->setMessage($th->getMessage())
+                ->setCode(500)
+                ->toApiResponse();
+        }
     }
 }

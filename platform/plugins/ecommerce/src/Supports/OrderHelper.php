@@ -119,8 +119,10 @@ class OrderHelper
                 'customer_email'   => $order->user->email ? $order->user->email : $order->address->email,
                 'customer_phone'   => $order->user->phone ? $order->user->phone : $order->address->phone,
                 'customer_address' => $order->address->address . ', ' . $order->address->city . ', ' . $order->address->country_name . (EcommerceHelperFacade::isZipCodeEnabled() ? ', ' . $order->address->zip_code : ''),
-                'product_list'     => view('plugins/ecommerce::emails.partials.order-detail',
-                    compact('order'))->render(),
+                'product_list'     => view(
+                    'plugins/ecommerce::emails.partials.order-detail',
+                    compact('order')
+                )->render(),
                 'shipping_method'  => $order->shipping_method_name,
                 'payment_method'   => $order->payment->payment_channel->label(),
             ]);
@@ -224,11 +226,9 @@ class OrderHelper
         $variables = [
             'order_id'  => Html::link(route('orders.edit', $history->order->id), get_order_code($history->order->id))
                 ->toHtml(),
-            'user_name' => $history->user_id === 0 ? trans('plugins/ecommerce::order.system') :
-                ($history->user ? $history->user->getFullName() : ($history->order->user->name ?
-                    $history->order->user->name :
-                    $history->order->address->name
-                )),
+            'user_name' => $history->user_id === 0 ? trans('plugins/ecommerce::order.system') : ($history->user ? $history->user->getFullName() : ($history->order->user->name ?
+                $history->order->user->name :
+                $history->order->address->name)),
         ];
 
         $content = $history->description;
@@ -324,11 +324,12 @@ class OrderHelper
             $productAttributesString .= '(';
 
             foreach ($productAttributes as $index => $attribute) {
-                $productAttributesString .= $attribute->attribute_set_title . ': ' . $attribute->title;
-
-                if ($index < count($productAttributes) - 1) {
-                    $productAttributesString .= ', ';
+                if ($attribute->attribute_set_slug == "color") {
+                    $productAttributesString .= $attribute->attribute_set_title . ': ' . $attribute->title;
                 }
+                // if ($index < count($productAttributes) - 1) {
+                //     $productAttributesString .= ', ';
+                // }
             }
             $productAttributesString .= ')';
         }
