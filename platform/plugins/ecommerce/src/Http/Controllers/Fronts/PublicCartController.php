@@ -121,8 +121,10 @@ class PublicCartController extends Controller
                 'content'     => $cartItems,
                 'next_url'    => $nextUrl,
             ])
-            ->setMessage(__('Added product :product to cart successfully!',
-                ['product' => $product->original_product->name]));
+            ->setMessage(__(
+                'Added product :product to cart successfully!',
+                ['product' => $product->original_product->name]
+            ));
     }
 
     /**
@@ -184,8 +186,8 @@ class PublicCartController extends Controller
 
             return $response->setNextUrl(route('public.checkout.information', $token));
         }
-        $data = $request->input('items', []);
 
+        $data = $request->input('items', []);
         $outOfQuantity = false;
         foreach ($data as $item) {
             $cartItem = Cart::instance('cart')->get($item['rowId']);

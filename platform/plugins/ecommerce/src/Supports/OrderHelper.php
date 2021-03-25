@@ -353,6 +353,8 @@ class OrderHelper
                 'attributes' => $productAttributesString,
                 'taxRate'    => $parentProduct->tax->percentage,
                 'extras'     => $request->input('extras', []),
+                'slug'       => $product->slug,
+                'parent_id'  => $parentProduct->id
             ]
         );
 

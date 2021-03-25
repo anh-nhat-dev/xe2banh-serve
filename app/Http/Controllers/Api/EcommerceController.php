@@ -11,7 +11,13 @@ use Botble\Slug\Repositories\Interfaces\SlugInterface;
 use Botble\Ecommerce\Services\Products\GetProductService;
 use Botble\Ecommerce\Repositories\Interfaces\{ProductAttributeSetInterface, ProductInterface, ProductCategoryInterface, ReviewInterface};
 use Botble\SimpleSlider\Repositories\Interfaces\SimpleSliderInterface;
+use Botble\Ecommerce\Services\HandleApplyPromotionsService;
+use Botble\Ecommerce\Services\HandleApplyCouponService;
+use Botble\Ecommerce\Services\HandleRemoveCouponService;
+use Botble\Ecommerce\Http\Requests\ApplyCouponRequest;
+use Botble\Ecommerce\Http\Requests\UpdateCartRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use App\Http\Requests\ReviewRequest;
 use App\Http\Requests\CartRequest;
 use DB;
@@ -374,29 +380,61 @@ class EcommerceController extends Controller
             ->orderBy('id', 'desc')
             ->paginate(10);
 
-
-
         return ReviewResource::collection($reviews);
     }
 
     /**
      * 
      */
-    public function getCart(BaseHttpResponse $response)
+    public function getCart(BaseHttpResponse $response, HandleApplyPromotionsService $applyPromotionsService)
     {
         try {
+
+            if (!EcommerceHelper::isCartEnabled()) {
+                return $response->setError()
+                    ->setMessage('Giỏ hàng hiện tại đang đóng để bảo trì. Xin vui lòng thử lại sau')
+                    ->setCode(404);
+            }
+
             $cartItems =  [];
+            $promotionDiscountAmount = 0;
+            $couponDiscountAmount = 0;
 
             foreach (Cart::instance('cart')->content() as $item) {
-                array_push($cartItems, $item);
+                $product = $this->productRepository->findById($item->id);
+                if (!$product) {
+                    Cart::remove($item->rowId);
+                } else {
+                    array_push($cartItems, $item);
+                }
+
+                $promotionDiscountAmount = $applyPromotionsService->execute();
+                $sessionData = OrderHelper::getOrderSessionData();
+
+                if (session()->has('applied_coupon_code')) {
+                    $couponDiscountAmount = Arr::get($sessionData, 'coupon_discount_amount', 0);
+                }
             }
 
             $data = [
                 "content"       => $cartItems,
                 "count"         => Cart::instance('cart')->count(),
-                "total_price"   => format_price(Cart::instance('cart')->rawSubTotal()),
-                "token"         => OrderHelper::getOrderSessionToken()
+                "total_price"   => Cart::instance('cart')->rawSubTotal(),
+                "token"         => OrderHelper::getOrderSessionToken(),
+                "final_price"   => Cart::instance('cart')->rawTotal() - $promotionDiscountAmount - $couponDiscountAmount
             ];
+
+            if ($promotionDiscountAmount > 0) {
+                $data["promotion_discount_amount"] = $promotionDiscountAmount;
+            }
+
+            if ($couponDiscountAmount > 0) {
+                $data["coupon_discount_amount"] = $couponDiscountAmount;
+            }
+
+            if (session('applied_coupon_code')) {
+                $data["code"] = session('applied_coupon_code');
+            }
 
             return $response->setData($data);
         } catch (\Throwable $th) {
@@ -492,5 +530,149 @@ class EcommerceController extends Controller
                 ->setCode(500)
                 ->toApiResponse();
         }
+    }
+
+    /**
+     * 
+     */
+    public function postApplyCoupon(
+        ApplyCouponRequest $request,
+        HandleApplyCouponService $handleApplyCouponService,
+        BaseHttpResponse $response
+    ) {
+
+        try {
+            if (!EcommerceHelper::isCartEnabled()) {
+                return $response->setError()
+                    ->setMessage('Giỏ hàng hiện tại đang đóng để bảo trì. Xin vui lòng thử lại sau')
+                    ->setCode(404);
+            }
+
+            $result = $handleApplyCouponService->execute($request->input('coupon_code'));
+
+            if ($result['error']) {
+                return $response
+                    ->setError()
+                    ->withInput()
+                    ->setMessage($result['message']);
+            }
+
+            $couponCode = $request->input('coupon_code');
+
+            return $response
+                ->setMessage(__('Applied coupon ":code" successfully!', ['code' => $couponCode]));
+        } catch (\Throwable $th) {
+            return $response->setError()
+                ->setMessage($th->getMessage())
+                ->setCode(500);
+        }
+    }
+
+    /**
+     * 
+     */
+    public function postRemoveCoupon(
+        Request $request,
+        HandleRemoveCouponService $removeCouponService,
+        BaseHttpResponse $response
+    ) {
+        try {
+            if (!EcommerceHelper::isCartEnabled()) {
+                return $response->setError()
+                    ->setMessage('Giỏ hàng hiện tại đang đóng để bảo trì. Xin vui lòng thử lại sau')
+                    ->setCode(404);
+            }
+
+            $result = $removeCouponService->execute();
+
+            if ($result['error']) {
+                if ($request->ajax()) {
+                    return $result;
+                }
+                return $response
+                    ->setError()
+                    ->setData($result)
+                    ->setMessage($result['message']);
+            }
+
+            return $response
+                ->setMessage(__('Removed coupon :code successfully!', ['code' => session('applied_coupon_code')]));
+        } catch (\Throwable $th) {
+            return $response->setError()
+                ->setMessage($th->getMessage())
+                ->setCode(500);
+        }
+    }
+
+    /**
+     * 
+     */
+    public function getRemove($id, BaseHttpResponse $response)
+    {
+        if (!EcommerceHelper::isCartEnabled()) {
+            return $response->setError()
+                ->setMessage('Giỏ hàng hiện tại đang đóng để bảo trì. Xin vui lòng thử lại sau')
+                ->setCode(404);
+        }
+
+        try {
+            Cart::instance('cart')->remove($id);
+        } catch (Exception $exception) {
+            return $response->setError()->setMessage(__('Cart item is not existed!'));
+        }
+
+        return $response
+            ->setMessage(__('Removed item from cart successfully!'));
+    }
+
+
+    /**
+     * 
+     */
+    public function postUpdateCart(UpdateCartRequest $request, BaseHttpResponse $response)
+    {
+        if (!EcommerceHelper::isCartEnabled()) {
+            return $response->setError()
+                ->setMessage('Giỏ hàng hiện tại đang đóng để bảo trì. Xin vui lòng thử lại sau')
+                ->setCode(404);
+        }
+
+        if ($request->has('checkout')) {
+            $token = OrderHelper::getOrderSessionToken();
+
+            return $response->setNextUrl(route('public.checkout.information', $token));
+        }
+        $data = $request->input('items', []);
+
+        $outOfQuantity = false;
+        foreach ($data as $item) {
+            $cartItem = Cart::instance('cart')->get($item['rowId']);
+            $product = null;
+            if ($cartItem) {
+                $product = $this->productRepository->findById($cartItem->id);
+            }
+            if ($product) {
+                $originalQuantity = $product->quantity;
+                $product->quantity = (int)$product->quantity - Arr::get($item['values'], 'qty', 0) + 1;
+                if ($product->quantity < 0) {
+                    $product->quantity = 0;
+                }
+                if ($product->isOutOfStock()) {
+                    $outOfQuantity = true;
+                } else {
+                    Cart::instance('cart')->update($item['rowId'], $item['values']);
+                }
+                $product->quantity = $originalQuantity;
+            }
+        }
+
+        if ($outOfQuantity) {
+            return $response
+                ->setError()
+                ->setMessage(__('One or all products are not enough quantity so cannot update!'));
+        }
+
+        return $response
+            ->setMessage(__('Update cart successfully!'));
     }
 }
