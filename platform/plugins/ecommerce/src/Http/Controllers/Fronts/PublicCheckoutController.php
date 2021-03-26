@@ -149,6 +149,8 @@ class PublicCheckoutController
             abort(404);
         }
 
+
+
         if ($token !== session('tracked_start_checkout')) {
             $order = $this->orderRepository->getFirstBy(['token' => $token, 'is_finished' => false]);
             if (!$order) {
@@ -200,21 +202,29 @@ class PublicCheckoutController
             }
         }
 
-        $defaultShippingMethod = $request->input('shipping_method',
-            old('shipping_method',
-                Arr::get($sessionCheckoutData, 'shipping_method', Arr::first(array_keys($shipping)))));
+        $defaultShippingMethod = $request->input(
+            'shipping_method',
+            old(
+                'shipping_method',
+                Arr::get($sessionCheckoutData, 'shipping_method', Arr::first(array_keys($shipping)))
+            )
+        );
 
         $defaultShippingOption = null;
         if (!empty($shipping)) {
             $defaultShippingOption = Arr::first(array_keys(Arr::first($shipping)));
-            $defaultShippingOption = $request->input('shipping_option',
-                old('shipping_option', Arr::get($sessionCheckoutData, 'shipping_option', $defaultShippingOption)));
+            $defaultShippingOption = $request->input(
+                'shipping_option',
+                old('shipping_option', Arr::get($sessionCheckoutData, 'shipping_option', $defaultShippingOption))
+            );
         }
+
         $shippingAmount = Arr::get($shipping, $defaultShippingMethod . '.' . $defaultShippingOption . '.price', 0);
 
         Arr::set($sessionCheckoutData, 'shipping_method', $defaultShippingMethod);
         Arr::set($sessionCheckoutData, 'shipping_option', $defaultShippingOption);
         Arr::set($sessionCheckoutData, 'shipping_amount', $shippingAmount);
+
         OrderHelper::setOrderSessionData($token, $sessionCheckoutData);
 
         if (session()->has('applied_coupon_code')) {
@@ -266,9 +276,9 @@ class PublicCheckoutController
                 $sessionData['created_account'] = true;
 
                 $this->addressRepository->createOrUpdate($request->input('address') + [
-                        'customer_id' => $customer->id,
-                        'is_default'  => true,
-                    ]);
+                    'customer_id' => $customer->id,
+                    'is_default'  => true,
+                ]);
             }
 
             if (auth('customer')->check() && auth('customer')->user()->addresses()->count() == 0) {
@@ -342,8 +352,10 @@ class PublicCheckoutController
                 'order_id' => $sessionData['created_order_id'],
             ];
         } elseif ((array)$request->input('address', [])) {
-            $addressData = array_merge(['order_id' => $sessionData['created_order_id']],
-                (array)$request->input('address', []));
+            $addressData = array_merge(
+                ['order_id' => $sessionData['created_order_id']],
+                (array)$request->input('address', [])
+            );
         }
 
         if ($addressData && !empty($addressData['name']) && !empty($addressData['phone']) && !empty($addressData['address'])) {
@@ -395,7 +407,6 @@ class PublicCheckoutController
             }
 
             $sessionData['created_order_product'] = true;
-
         }
 
         OrderHelper::setOrderSessionData($token, $sessionData);
@@ -453,6 +464,7 @@ class PublicCheckoutController
         if (!EcommerceHelper::isCartEnabled()) {
             abort(404);
         }
+
 
         if ($token !== session('tracked_start_checkout')) {
             $order = $this->orderRepository->getFirstBy(['token' => $token, 'is_finished' => false]);
@@ -533,8 +545,10 @@ class PublicCheckoutController
 
         $shippingAmount = 0;
 
-        if ($request->has('shipping_method') && !get_shipping_setting('free_ship',
-                $request->input('shipping_method'))) {
+        if ($request->has('shipping_method') && !get_shipping_setting(
+            'free_ship',
+            $request->input('shipping_method')
+        )) {
 
             $shippingData = [
                 'address'     => Arr::get($sessionData, 'address'),
@@ -545,8 +559,11 @@ class PublicCheckoutController
                 'order_total' => Cart::instance('cart')->rawTotal() - $promotionDiscountAmount - $couponDiscountAmount,
             ];
 
-            $shippingMethod = $shippingFeeService->execute($shippingData, $request->input('shipping_method'),
-                $request->input('shipping_option'));
+            $shippingMethod = $shippingFeeService->execute(
+                $shippingData,
+                $request->input('shipping_method'),
+                $request->input('shipping_option')
+            );
 
             $shippingAmount = Arr::get(Arr::first($shippingMethod), 'price', 0);
         }
@@ -568,7 +585,7 @@ class PublicCheckoutController
         $request->merge([
             'amount'          => ($promotionDiscountAmount + $couponDiscountAmount - $shippingAmount) > Cart::instance('cart')
                 ->rawTotal() ? 0 : Cart::instance('cart')
-                    ->rawTotal() + $shippingAmount - $promotionDiscountAmount - $couponDiscountAmount,
+                ->rawTotal() + $shippingAmount - $promotionDiscountAmount - $couponDiscountAmount,
             'currency'        => $request->input('currency', strtoupper(get_application_currency()->title)),
             'user_id'         => $currentUserId,
             'shipping_method' => $request->input('shipping_method', ShippingMethodEnum::DEFAULT),
@@ -730,6 +747,7 @@ class PublicCheckoutController
         if ($token !== session('tracked_start_checkout') || !$order) {
             return $response->setNextUrl(url('/'));
         }
+
 
         OrderHelper::clearSessions($token);
 
@@ -972,15 +990,21 @@ class PublicCheckoutController
             }
         }
 
-        $defaultShippingMethod = $request->input('shipping_method',
-            old('shipping_method',
-                Arr::get($sessionCheckoutData, 'shipping_method', Arr::first(array_keys($shipping)))));
+        $defaultShippingMethod = $request->input(
+            'shipping_method',
+            old(
+                'shipping_method',
+                Arr::get($sessionCheckoutData, 'shipping_method', Arr::first(array_keys($shipping)))
+            )
+        );
 
         $defaultShippingOption = null;
         if (!empty($shipping)) {
             $defaultShippingOption = Arr::first(array_keys(Arr::first($shipping)));
-            $defaultShippingOption = $request->input('shipping_option',
-                old('shipping_option', Arr::get($sessionCheckoutData, 'shipping_option') ?? $defaultShippingOption));
+            $defaultShippingOption = $request->input(
+                'shipping_option',
+                old('shipping_option', Arr::get($sessionCheckoutData, 'shipping_option') ?? $defaultShippingOption)
+            );
         }
         $shippingAmount = Arr::get($shipping, $defaultShippingMethod . '.' . $defaultShippingOption . '.price', 0);
 
