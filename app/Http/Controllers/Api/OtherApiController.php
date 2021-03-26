@@ -8,8 +8,10 @@ use Illuminate\Http\Request;
 
 class OtherApiController extends Controller
 {
-    public function getHomeSetting()
+    public function getHomeSetting(Request $request)
     {
+
+        $request->session()->regenerate();
         $data = [
             "site_title" => theme_option('site_title'),
             "logo" => RvMedia::getImageUrl(theme_option('logo'), null, false),

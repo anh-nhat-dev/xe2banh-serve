@@ -44,7 +44,7 @@ class Kernel extends HttpKernel
             'throttle:1000,1',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \Illuminate\Session\Middleware\StartSession::class,
-            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            // \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \App\Http\Middleware\EncryptCookies::class,
         ],
     ];
