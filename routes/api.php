@@ -14,6 +14,8 @@
 Route::group(['namespace' => 'App\Http\Controllers\Api', 'middleware' => ['api']], function () {
     Route::get("/products/{id}/review-star", "EcommerceController@getRatingsProduct");
     Route::get("/cart", "EcommerceController@getCart");
+    Route::get("/checkout/{token}", "EcommerceController@getCheckoutInfomation");
+    Route::post("/checkout/{token}", "EcommerceController@postCheckout");
     Route::post("/cart/apply-coupon", "EcommerceController@postApplyCoupon");
     Route::put("/cart", "EcommerceController@postUpdateCart");
     Route::post("/cart/remove-coupon", "EcommerceController@postRemoveCoupon");
