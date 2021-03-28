@@ -27,10 +27,10 @@ class ProductResource extends JsonResource
             "sale_percentage" => get_sale_percentage($this->price, $this->front_sale_price),
             "price" => $this->price,
             "sale_price" => $this->sale_price,
-            "image"  => RvMedia::getImageUrl($this->image, null, false),
+            "image"  => RvMedia::getImageUrl($this->original_product->image, null, false),
             "front_sale_price" => $this->front_sale_price,
             "promotions" => $this->promotions,
-            "out_of_stock" => $this->isOutOfStock()
+            
         ];
 
         $advanced_response = [
@@ -45,7 +45,8 @@ class ProductResource extends JsonResource
             "brand" => $this->brand,
             "average_star" => get_average_star_of_product($this->id),
             "total_reviewed" => get_count_reviewed_of_product($this->id),
-            "categories" => CategoryResource::collection($this->categories)
+            "categories" => CategoryResource::collection($this->categories),
+            "out_of_stock" => $this->isOutOfStock()
         ];
 
         return empty($is_single) ? $normal_response : array_merge($normal_response, $advanced_response);

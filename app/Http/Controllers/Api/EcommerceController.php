@@ -15,7 +15,8 @@ use App\Http\Resources\{
     BrandResource,
     ProductAttributeSetResource,
     SimpleSliderResource,
-    ReviewResource
+    ReviewResource,
+    OrderResource
 };
 use Botble\Menu\Repositories\Interfaces\{MenuLocationInterface, MenuNodeInterface};
 use Botble\Slug\Repositories\Interfaces\SlugInterface;
@@ -1192,5 +1193,30 @@ class EcommerceController extends Controller
         }
 
         return $this->orderAddressRepository->create($data);
+    }
+
+    /**
+     * @param string $token
+     * @param BaseHttpResponse $response
+     * @return BaseHttpResponse|Application|Factory|RedirectResponse|View
+     */
+    public function getCheckoutSuccess($token, BaseHttpResponse $response)
+    {
+        if (!EcommerceHelper::isCartEnabled()) {
+            return $response->setError()
+                ->setMessage('Giỏ hàng hiện tại đang đóng để bảo trì. Xin vui lòng thử lại sau')
+                ->setCode(404);
+        }
+
+        $order = $this->orderRepository->getFirstBy(compact('token'), [], ['address', 'products']);
+
+        if ($token !== session('tracked_start_checkout') || !$order) {
+            return $response->setError('Lỗi không xác định');
+        }
+
+
+        OrderHelper::clearSessions($token);
+
+        return $response->setData(new OrderResource($order));
     }
 }
