@@ -45,4 +45,5 @@ Route::group(['namespace' => 'App\Http\Controllers\Api', 'middleware' => ['api']
     Route::get("/post-categories/{id}/posts", "BlogController@getPostByCategory");
     Route::get("/featured-categories", "BlogController@getFeaturedCategory");
     Route::get("/home-settings", "OtherApiController@getHomeSetting");
+    Route::get("/widget/{key}", "OtherApiController@getWidget");
 });

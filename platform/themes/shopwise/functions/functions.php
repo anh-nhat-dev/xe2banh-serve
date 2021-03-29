@@ -15,6 +15,18 @@ register_sidebar([
     'description' => __('Sidebar in the footer of site'),
 ]);
 
+register_sidebar([
+    'id'          => 'shop_system',
+    'name'        => __('Hệ thống cửa hàng'),
+    'description' => __('Hệ thống cửa hàng trên cả nước'),
+]);
+
+register_sidebar([
+    'id'          => 'hotline_footer',
+    'name'        => __('Hotline các vùng'),
+    'description' => __('Hotline các vùng'),
+]);
+
 theme_option()
     ->setField([
         'id'         => 'copyright',
@@ -399,17 +411,23 @@ if (is_plugin_active('ecommerce')) {
         }
     }, 231, 3);
 
-    add_shortcode('featured-product-categories', __('Featured Product Categories'), __('Featured Product Categories'),
+    add_shortcode(
+        'featured-product-categories',
+        __('Featured Product Categories'),
+        __('Featured Product Categories'),
         function ($shortCode) {
 
             return Theme::partial('short-codes.featured-product-categories', [
                 'title'       => $shortCode->title,
                 'description' => $shortCode->description,
             ]);
-        });
+        }
+    );
 
-    shortcode()->setAdminConfig('featured-product-categories',
-        Theme::partial('short-codes.featured-product-categories-admin-config'));
+    shortcode()->setAdminConfig(
+        'featured-product-categories',
+        Theme::partial('short-codes.featured-product-categories-admin-config')
+    );
 
     add_shortcode('featured-brands', __('Featured Brands'), __('Featured Brands'), function ($shortCode) {
         return Theme::partial('short-codes.featured-brands', [
@@ -420,8 +438,11 @@ if (is_plugin_active('ecommerce')) {
     shortcode()->setAdminConfig('featured-brands', Theme::partial('short-codes.featured-brands-admin-config'));
 
     add_shortcode('product-collections', __('Product Collections'), __('Product Collections'), function ($shortCode) {
-        $productCollections = get_product_collections(['status' => BaseStatusEnum::PUBLISHED], [],
-            ['id', 'name', 'slug'])->toArray();
+        $productCollections = get_product_collections(
+            ['status' => BaseStatusEnum::PUBLISHED],
+            [],
+            ['id', 'name', 'slug']
+        )->toArray();
 
         return Theme::partial('short-codes.product-collections', [
             'title'              => $shortCode->title,
@@ -429,8 +450,10 @@ if (is_plugin_active('ecommerce')) {
         ]);
     });
 
-    shortcode()->setAdminConfig('product-collections',
-        Theme::partial('short-codes.product-collections-admin-config'));
+    shortcode()->setAdminConfig(
+        'product-collections',
+        Theme::partial('short-codes.product-collections-admin-config')
+    );
 
     add_shortcode('trending-products', __('Trending Products'), __('Trending Products'), function ($shortCode) {
         return Theme::partial('short-codes.trending-products', [
@@ -502,7 +525,6 @@ if (is_plugin_active('ecommerce')) {
 
         return Theme::partial('short-codes.flash-sale-admin-config', compact('flashSales'));
     });
-
 }
 
 add_shortcode('banners', __('Banners'), __('Banners'), function ($shortCode) {

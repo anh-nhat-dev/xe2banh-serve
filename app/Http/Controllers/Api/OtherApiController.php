@@ -3,11 +3,17 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Botble\Base\Http\Responses\BaseHttpResponse;
+use Botble\Widget\Repositories\Interfaces\WidgetInterface;
+use App\Http\Resources\WidgetResource;
 use RvMedia;
 use Illuminate\Http\Request;
 
 class OtherApiController extends Controller
 {
+    /**
+     * 
+     */
     public function getHomeSetting(Request $request)
     {
 
@@ -19,5 +25,17 @@ class OtherApiController extends Controller
         ];
 
         return response()->json(compact('data'));
+    }
+
+    /**
+     * 
+     */
+    public function getWidget(BaseHttpResponse $response, $key)
+    {
+        $widgets =  app(WidgetInterface::class)->getModel()
+            ->where('sidebar_id', $key)
+            ->get();
+
+        return $response->setData(WidgetResource::collection($widgets));
     }
 }
