@@ -19,18 +19,19 @@ class ProductResource extends JsonResource
 
         $is_single = $request->input('is_single');
 
+
         $normal_response = [
-            "id" => $this->id,
-            "name" => $this->name,
-            "slug" => $this->slug,
-            "sku" => $this->sku,
-            "sale_percentage" => get_sale_percentage($this->price, $this->front_sale_price),
-            "price" => $this->price,
-            "sale_price" => $this->sale_price,
-            "image"  => RvMedia::getImageUrl($this->original_product->image, null, false),
-            "front_sale_price" => $this->front_sale_price,
-            "promotions" => $this->promotions,
-            
+            "id"                        => $this->id,
+            "name"                  => $this->name,
+            "slug"                  => $this->slug,
+            "sku"                   => $this->sku,
+            "sale_percentage"       => get_sale_percentage($this->price, $this->front_sale_price),
+            "price"                 => $this->price,
+            "sale_price"            => $this->sale_price,
+            "image"                 => RvMedia::getImageUrl($this->original_product->image, null, false),
+            "front_sale_price"      => $this->front_sale_price,
+            "promotions"            => $this->promotions,
+
         ];
 
         $advanced_response = [
@@ -39,7 +40,6 @@ class ProductResource extends JsonResource
             }),
             "description" => $this->description,
             "content"   => $this->content,
-            "productAttributes" => $this->productAttributes,
             "productAttributeSets" => $this->productAttributeSets,
             "variations" => VariationResource::collection($this->variations),
             "brand" => $this->brand,

@@ -20,7 +20,7 @@ class VariationResource extends JsonResource
             "product_id" => $this->product_id,
             "is_default" => $this->is_default,
             "product" => new ProductResource($this->product),
-            "productAttributes" =>   $this->productAttributes
+            "productAttributes" =>  get_product_attributes($this->product_id)
         ];
     }
 }
