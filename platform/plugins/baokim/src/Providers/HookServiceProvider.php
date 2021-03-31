@@ -3,7 +3,7 @@
 namespace Botble\BaoKim\Providers;
 
 use Botble\Payment\Enums\PaymentMethodEnum;
-// use Html;
+use Html;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 use Botble\BaoKim\BaoKimAPI;
@@ -86,10 +86,10 @@ class HookServiceProvider extends ServiceProvider
         if ($request->input('payment_method') == BAOKIM_PAYMENT_METHOD_NAME) {
 
             $payload = array(
-                "mrc_order_id"      => 'web_order_bkim' . $request->input('order_id'),
+                "mrc_order_id"      => random_bytes(2) . $request->input('order_id'),
                 "total_amount"      => $request->input("amount"),
                 "description"       => 'Order #' . $request->input('order_id'),
-                "url_success"       => "http://nhatdev.xyz/callback",
+                "url_success"       => "http://localhost:8000",
                 "customer_email"    => $request->input('address.email'),
                 "accept_bank"       => 1,
                 "accept_cc"         => 1,

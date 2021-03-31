@@ -1055,6 +1055,7 @@ class EcommerceController extends Controller
             }
 
             return $response
+                ->setData($paymentData)
                 ->setMessage(__('Checkout successfully!'));
         }
 
