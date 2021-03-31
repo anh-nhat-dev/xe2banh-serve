@@ -816,7 +816,16 @@ class EcommerceController extends Controller
                 "method"        => "cod",
                 "label"         => setting('payment_cod_name', trans('plugins/payment::payment.payment_via_cod')),
                 "description"   => setting('payment_cod_description'),
-                "is_default"       => setting('default_payment_method') == \Botble\Payment\Enums\PaymentMethodEnum::COD
+                "is_default"    => setting('default_payment_method') == \Botble\Payment\Enums\PaymentMethodEnum::COD
+            ];
+        }
+
+        if (setting('payment_baokim_status') == 1) {
+            $payment_method[] = [
+                "method"        => "baokim",
+                "label"         => setting('payment_baokim_name', trans('plugins/payment::payment.payment_via_baokim')),
+                "description"   => setting('payment_baokim_description'),
+                "is_default"    => setting('default_payment_method') == 'baokim'
             ];
         }
 

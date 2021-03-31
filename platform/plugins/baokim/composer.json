@@ -1,0 +1,8 @@
+{
+    "name": "botble/baokim",
+    "description": "Baokim payment gateway",
+    "type": "package",
+    "require": {
+        "firebase/php-jwt": "*"
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "name": "Baokim Payment Gateway",
+    "namespace": "Botble\\BaoKim\\",
+    "provider": "Botble\\BaoKim\\Providers\\BaoKimServiceProvider",
+    "author": "Botble Technologies",
+    "url": "https://botble.com",
+    "version": "1.0",
+    "description": "Baokim payment gateway integration",
+    "require": []
+}
