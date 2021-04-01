@@ -27,6 +27,12 @@ register_sidebar([
     'description' => __('Hotline các vùng'),
 ]);
 
+register_sidebar([
+    'id'          => 'buy-online',
+    'name'        => __('Yên tâm mua sắm online'),
+    'description' => __('Yên tâm mua sắm online'),
+]);
+
 theme_option()
     ->setField([
         'id'         => 'copyright',
