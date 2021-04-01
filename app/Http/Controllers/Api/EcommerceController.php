@@ -39,13 +39,14 @@ use Botble\Ecommerce\Services\HandleRemoveCouponService;
 use Botble\Ecommerce\Services\HandleShippingFeeService;
 use Botble\Ecommerce\Http\Requests\ApplyCouponRequest;
 use Botble\Ecommerce\Http\Requests\UpdateCartRequest;
-use Botble\Ecommerce\Http\Requests\CheckoutRequest;
+// use Botble\Ecommerce\Http\Requests\CheckoutRequest;
 use Botble\Payment\Services\Gateways\BankTransferPaymentService;
 use Botble\Payment\Services\Gateways\CodPaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use App\Http\Requests\ReviewRequest;
 use App\Http\Requests\CartRequest;
+use App\Http\Requests\OrderRequest;
 use DB;
 use Cart;
 use EcommerceHelper;
@@ -164,6 +165,7 @@ class EcommerceController extends Controller
         if (!$menuLocation) return response()->json(["data" => []]);
 
         $menuNodes = $this->menuNodeRepository->allBy(["menu_id" => $menuLocation->menu_id, "parent_id" => 0], ["child"]);
+
         return MenuNodeResource::collection($menuNodes);
     }
 
@@ -221,12 +223,37 @@ class EcommerceController extends Controller
     /**
      * 
      */
+    public function getProductsByIds(Request $request, BaseHttpResponse $response)
+    {
+        try {
+            $params = [
+                "condition" => [
+                    'ec_products.status'       => BaseStatusEnum::PUBLISHED,
+                    'ec_products.is_variation' => 0,
+                ],
+                "take"      =>  10
+            ];
+
+            if ($request->has("ids")) {
+                $params["condition"]["ec_products.id"] = ["ec_products.id", "in", $request->input("ids")];
+            }
+
+            $products = $this->productRepository->getProducts($params);
+
+            return $response->setData(ProductResource::collection($products));
+        } catch (\Throwable $th) {
+            return $response->setError()->setMessage($th->getMessage());
+        }
+    }
+
+    /**
+     * 
+     */
     public function getProducts(Request $request, GetProductService $productService)
     {
         $products = $productService->getProduct($request);
         $request->request->add(["is_single" => false]);
         return ProductResource::collection($products);
-        // return response()->json(["products" => $products]);
     }
 
     /**
@@ -845,7 +872,7 @@ class EcommerceController extends Controller
 
     /**
      * @param string $token
-     * @param CheckoutRequest $request
+     * @param OrderRequest $request
      * @param PayPalPaymentService $palPaymentService
      * @param StripePaymentService $stripePaymentService
      * @param BaseHttpResponse $response
@@ -858,7 +885,7 @@ class EcommerceController extends Controller
      */
     public function postCheckout(
         $token,
-        CheckoutRequest $request,
+        OrderRequest $request,
         CodPaymentService $codPaymentService,
         BankTransferPaymentService $bankTransferPaymentService,
         BaseHttpResponse $response,

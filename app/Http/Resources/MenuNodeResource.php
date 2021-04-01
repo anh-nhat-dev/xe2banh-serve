@@ -15,10 +15,11 @@ class MenuNodeResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "id" => $this->id,
-            "url" => $this->url,
+            "id"    => $this->id,
+            "url"   => $this->url,
             "title" => $this->title,
-            "child" => MenuNodeResource::collection($this->child)
+            "child" => MenuNodeResource::collection($this->child),
+            "icon"  => $this->icon_font
         ];
     }
 }

@@ -47,4 +47,5 @@ Route::group(['namespace' => 'App\Http\Controllers\Api', 'middleware' => ['api']
     Route::get("/home-settings", "OtherApiController@getHomeSetting");
     Route::get("/widget/{key}", "OtherApiController@getWidget");
     Route::get("/pages/{key}", "OtherApiController@getPageBySlug");
+    Route::get("/products-by-ids", "EcommerceController@getProductsByIds");
 });
