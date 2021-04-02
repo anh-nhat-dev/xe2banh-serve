@@ -7,6 +7,7 @@ use Html;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 use Botble\BaoKim\BaoKimAPI;
+// use BaoKimSDK\BaoKim;
 // use Mollie;
 // use OrderHelper;
 // use Throwable;
@@ -85,20 +86,46 @@ class HookServiceProvider extends ServiceProvider
     {
         if ($request->input('payment_method') == BAOKIM_PAYMENT_METHOD_NAME) {
 
-            $payload = array(
-                "mrc_order_id"      => random_bytes(2) . $request->input('order_id'),
-                "total_amount"      => $request->input("amount"),
-                "description"       => 'Order #' . $request->input('order_id'),
-                "url_success"       => "http://localhost:8000",
-                "customer_email"    => $request->input('address.email'),
-                "accept_bank"       => 1,
-                "accept_cc"         => 1,
-                "accept_qrpay"      => 1,
-                "accept_e_wallet"   => 1,
-                "customer_phone"    => $request->input('address.phone'),
-                "customer_name"     => $request->input('address.name'),
-                "customer_address"  => $request->input('address.address')
-            );
+            // $payload = array(
+            //     "mrc_order_id"          => random_bytes(2) . $request->input('order_id'),
+            //     "payment_method_types"  => [1, 2, 3],
+            //     "line_items"            => [],
+            //     "total_amount"          => $request->input("amount"),
+            //     "description"           => 'Order #' . $request->input('order_id'),
+            //     "success_url"           => "http://localhost:8000",
+            //     "customer_email"        => $request->input('address.email'),
+            //     "customer_phone"        => $request->input('address.phone'),
+            //     "customer_name"         => $request->input('address.name'),
+            //     "customer_address"      => $request->input('address.address')
+            // );
+
+            $payload = [
+                'payment_method_types' => [1, 2, 3],
+                'mrc_order_id' => 'mrcOrderdddddId_' . time(),
+                'line_items' => [
+                    [
+                        'name' => 'T-shirt',
+                        'description' => 'Comfortable cotton t-shirt',
+                        'images' => ['https://example.com/t-shirt.png'],
+                        'amount' => 500000,
+                        'currency' => 'vnd',
+                        'quantity' => 1,
+                    ],
+                    [
+                        'name' => 'T-shirt',
+                        'description' => 'Comfortable cotton t-shirt',
+                        'images' => ['https://example.com/t-shirt.png'],
+                        'amount' => 100000,
+                        'currency' => 'vnd',
+                        'quantity' => 1,
+                    ]
+                ],
+                'success_url' => 'https://example.com/success-url',
+                'cancel_url' => 'https://example.com/cancel-url',
+                'webhook_url' => 'https://example.com/webhook-url',
+                'customer_email' => 'haumv174@gmail.com',
+                'customer_phone' => '0397471667',
+            ];
 
             $response = app(BaoKimAPI::class)->sendOrder($payload);
 

@@ -7,6 +7,7 @@ use Botble\Base\Traits\LoadAndPublishDataTrait;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\ServiceProvider;
 use Botble\BaoKim\BaoKimAPI;
+// use BaoKimSDK\BaoKim;
 
 class BaoKimServiceProvider extends ServiceProvider
 {
@@ -42,6 +43,8 @@ class BaoKimServiceProvider extends ServiceProvider
                 'plugins.baokim.baokim.key'    => get_payment_setting('api_key', BAOKIM_PAYMENT_METHOD_NAME),
                 'plugins.baokim.baokim.secret' => get_payment_setting('secret', BAOKIM_PAYMENT_METHOD_NAME),
             ]);
+
+            // BaoKim::setKey(get_payment_setting('api_key', BAOKIM_PAYMENT_METHOD_NAME), get_payment_setting('secret', BAOKIM_PAYMENT_METHOD_NAME));
         }
     }
 }

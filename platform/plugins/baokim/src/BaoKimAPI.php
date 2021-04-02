@@ -37,7 +37,7 @@ class BaoKimAPI
     /**
      * 
      */
-    private function refreshToken(array $payload)
+    private function refreshToken()
     {
         $tokenId    = base64_encode(random_bytes(32));
         $issuedAt   = time();
@@ -54,7 +54,7 @@ class BaoKimAPI
             'iss'  => $this->key,     // Issuer
             'nbf'  => $notBefore,        // Not before
             'exp'  => $expire,           // Expire
-            'form_params' => $payload                // request body (dữ liệu post
+            'form_params' => []                // request body (dữ liệu post
 
         ];
 
@@ -71,15 +71,15 @@ class BaoKimAPI
     /**
      * 
      */
-    private function getToken(array $payload)
+    private function getToken()
     {
         if (!$this->_jwt)
-            $this->refreshToken($payload);
+            $this->refreshToken();
 
         try {
             JWT::decode($this->_jwt, $this->secret, array($this->encode_alg));
         } catch (\Throwable $th) {
-            $this->refreshToken($payload);
+            $this->refreshToken();
         }
 
         return $this->_jwt;
@@ -90,7 +90,7 @@ class BaoKimAPI
      */
     public function sendOrder(array $payload)
     {
-        $enpoint = $this->endpoint . '/order/send';
+        $enpoint = $this->endpoint . '/checkout/api/v4/session/create';
 
         $options = array(
             "query" => array(
