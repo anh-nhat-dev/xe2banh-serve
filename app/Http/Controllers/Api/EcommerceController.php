@@ -40,6 +40,7 @@ use Botble\Ecommerce\Services\HandleShippingFeeService;
 use Botble\Ecommerce\Http\Requests\ApplyCouponRequest;
 use Botble\Ecommerce\Http\Requests\UpdateCartRequest;
 // use Botble\Ecommerce\Http\Requests\CheckoutRequest;
+use Botble\BaoKim\BaoKimAPI;
 use Botble\Payment\Services\Gateways\BankTransferPaymentService;
 use Botble\Payment\Services\Gateways\CodPaymentService;
 use Illuminate\Http\Request;
@@ -838,6 +839,52 @@ class EcommerceController extends Controller
 
         $payment_method = [];
 
+        if (setting('payment_baokim_status') == 1) {
+
+            $bpmList = app(BaoKimAPI::class)->getBankPaymentMethodList();
+            $bpmList = is_array($bpmList) ? collect($bpmList) : collect([]);
+            $types = collect([
+                [
+                    "type"      => 0,
+                    "title"     => "Thanh toán từ ví Bảo Kim",
+                    "image"     => "http://demo.baokim.vn/bkim/sercurity.png",
+                    "list"      => collect([])
+                ],
+                [
+                    "type"      => 1,
+                    "title"     => "Thẻ ATM online các ngân hàng",
+                    "image"     => "http://demo.baokim.vn/bkim/atm.png",
+                    "list"      => collect([])
+                ],
+                [
+                    "type"      => 2,
+                    "title"     => "Thẻ tín dụng",
+                    "image"     => "http://demo.baokim.vn/bkim/atm.png",
+                    "list"      => collect([])
+                ],                
+            ]);
+
+            $types =  $types->map(function($type) use ($bpmList) {
+
+                $list =  $bpmList->filter(function($value, $key) use ($type) {
+                    return $value->type == $type["type"];
+                })->all();
+
+                $type["list"] = $type["list"]->merge($list)->all();
+
+                return $type;
+
+            });
+
+            $payment_method[] = [
+                "method"        => "baokim",
+                "label"         => setting('payment_baokim_name', trans('plugins/payment::payment.payment_via_baokim')),
+                "description"   => setting('payment_baokim_description'),
+                "is_default"    => setting('default_payment_method') == 'baokim',
+                "types"         => $types
+            ];
+        }
+
         if (setting('payment_cod_status') == 1) {
             $payment_method[] = [
                 "method"        => "cod",
@@ -847,14 +894,6 @@ class EcommerceController extends Controller
             ];
         }
 
-        if (setting('payment_baokim_status') == 1) {
-            $payment_method[] = [
-                "method"        => "baokim",
-                "label"         => setting('payment_baokim_name', trans('plugins/payment::payment.payment_via_baokim')),
-                "description"   => setting('payment_baokim_description'),
-                "is_default"    => setting('default_payment_method') == 'baokim'
-            ];
-        }
 
         if (setting('payment_bank_transfer_status') == 1) {
             $payment_method[] = [

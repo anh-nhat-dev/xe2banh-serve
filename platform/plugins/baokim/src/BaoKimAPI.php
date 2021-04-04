@@ -85,16 +85,18 @@ class BaoKimAPI
         return $this->_jwt;
     }
 
+
+
     /**
      * 
      */
     public function sendOrder(array $payload)
     {
-        $enpoint = $this->endpoint . '/checkout/api/v4/session/create';
+        $enpoint = $this->endpoint . '/api/v4/order/send';
 
         $options = array(
             "query" => array(
-                "jwt" => $this->getToken($payload)
+                "jwt" => $this->getToken()
             ),
             "form_params" => $payload
         );
@@ -104,5 +106,24 @@ class BaoKimAPI
         $body = json_decode($response->getBody()->getContents());
 
         return $body;
+    }
+
+    /**
+     * 
+     */
+    public function getBankPaymentMethodList(){
+   
+        $enpoint = $this->endpoint . '/api/v4/bpm/list';
+        $options = array(
+            "query" => array(
+                "jwt" => $this->getToken()
+            )
+        );
+
+        $response = $this->client->request('GET', $enpoint, $options);
+
+        $body = json_decode($response->getBody()->getContents());
+
+        return $body->data ??  [];
     }
 }

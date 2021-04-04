@@ -50,6 +50,10 @@ class OrderRequest extends Request
             $rules['address.name'] = 'required|min:3|max:120';
         }
 
+        if  ($this->input("payment_method") == "baokim") {
+            $rules['bao_kim_bank'] = 'required|numeric';
+        }
+
         return $rules;
     }
 
@@ -66,6 +70,7 @@ class OrderRequest extends Request
             'address.state.required'   => __("Trường trạng thái là bắt buộc."),
             'address.city.required'    => __('Trường thành phố là bắt buộc.'),
             'address.address.required' => __('Trường địa chỉ là bắt buộc.'),
+            'bao_kim_bank.required'    => __("Bạn chưa chọn hình thức  thanh toán của Bảo Kim")
         ];
 
         return array_merge(parent::messages(), $messages);
