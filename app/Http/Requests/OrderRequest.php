@@ -33,7 +33,7 @@ class OrderRequest extends Request
             'amount'          => 'required|min:0',
         ];
 
-        $rules['address.address_id'] = 'required_without:address.name';
+        // $rules['address.address_id'] = 'required_without:address.name';
         if (!$this->has('address.address_id') || $this->input('address.address_id') === 'new') {
             $rules['address.name'] = 'required|min:3|max:120';
             $rules['address.phone'] = 'required|numeric';

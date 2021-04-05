@@ -894,7 +894,6 @@ class EcommerceController extends Controller
             ];
         }
 
-
         if (setting('payment_bank_transfer_status') == 1) {
             $payment_method[] = [
                 "method"        => "bank_transfer",
