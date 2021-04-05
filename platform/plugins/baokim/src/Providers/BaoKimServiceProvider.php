@@ -29,7 +29,7 @@ class BaoKimServiceProvider extends ServiceProvider
     {
         if (is_plugin_active('payment')) {
             $this->setNamespace('plugins/baokim')
-                // ->loadRoutes(['web'])
+                ->loadRoutes(['web'])
                 ->loadAndPublishConfigurations([
                     'baokim'
                 ])

@@ -9,7 +9,7 @@ use Illuminate\Support\ServiceProvider;
 use Botble\BaoKim\BaoKimAPI;
 // use BaoKimSDK\BaoKim;
 // use Mollie;
-// use OrderHelper;
+use OrderHelper;
 // use Throwable;
 
 
@@ -85,12 +85,11 @@ class HookServiceProvider extends ServiceProvider
     public function checkoutWithMollie(array $data, Request $request)
     {
         if ($request->input('payment_method') == BAOKIM_PAYMENT_METHOD_NAME) {
-
             $payload = array(
-                "mrc_order_id"          => mt_rand(5,10) . $request->input('order_id'),
+                "mrc_order_id"          => time() . $request->input('order_id'),
                 "total_amount"          => $request->input("amount"),
                 "description"           => 'Order #' . $request->input('order_id'),
-                "url_success"           => "http://localhost:8000",
+                "url_success"           => route("baokim.payment.callback", OrderHelper::getOrderSessionToken()),
                 "customer_email"        => $request->input('address.email'),
                 "customer_phone"        => $request->input('address.phone'),
                 "customer_name"         => $request->input('address.name'),

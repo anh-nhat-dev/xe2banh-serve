@@ -85,6 +85,15 @@ class BaoKimAPI
         return $this->_jwt;
     }
 
+    /**
+     * 
+     */
+    public function verifyQuery($query,  $checksum)
+    {
+        $myCheckSum =  hash_hmac('sha256', http_build_query($query), $this->secret);
+        return $checksum == $myCheckSum;
+    }
+
 
 
     /**
@@ -111,8 +120,9 @@ class BaoKimAPI
     /**
      * 
      */
-    public function getBankPaymentMethodList(){
-   
+    public function getBankPaymentMethodList()
+    {
+
         $enpoint = $this->endpoint . '/api/v4/bpm/list';
         $options = array(
             "query" => array(
