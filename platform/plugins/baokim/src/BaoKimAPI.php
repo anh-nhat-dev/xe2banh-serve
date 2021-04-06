@@ -95,6 +95,24 @@ class BaoKimAPI
     }
 
 
+    /**
+     * 
+     */
+    public function getOrderDetail($id, $mrc_id)
+    {
+        $enpoint = $this->endpoint . '/api/v4/order/detail';
+        $options = [
+            'query'     => [
+                'jwt'           =>  $this->getToken(),
+                'id'            => $id,
+                'mrc_order_id'  => $mrc_id
+            ]
+        ];
+
+        return $this->sendRequest($enpoint, $options);
+    }
+
+
 
     /**
      * 
@@ -102,19 +120,13 @@ class BaoKimAPI
     public function sendOrder(array $payload)
     {
         $enpoint = $this->endpoint . '/api/v4/order/send';
-
         $options = array(
             "query" => array(
                 "jwt" => $this->getToken()
             ),
             "form_params" => $payload
         );
-
-        $response = $this->client->request('POST', $enpoint, $options);
-
-        $body = json_decode($response->getBody()->getContents());
-
-        return $body;
+        return  $this->sendRequest($enpoint, $options, "POST");
     }
 
     /**
@@ -129,11 +141,26 @@ class BaoKimAPI
                 "jwt" => $this->getToken()
             )
         );
-
-        $response = $this->client->request('GET', $enpoint, $options);
-
-        $body = json_decode($response->getBody()->getContents());
-
+        $body = $this->sendRequest($enpoint, $options);
         return $body->data ??  [];
+    }
+
+
+    /**
+     * 
+     */
+    private function sendRequest($enpoint, $options, $method = "GET")
+    {
+        try {
+            $response = $this->client->request($method, $enpoint, $options);
+            $body = json_decode($response->getBody()->getContents());
+            return $body;
+        } catch (\Throwable $th) {
+            $response = new \stdClass();
+            $response->error    = true;
+            $response->message  = $th->getMessage();
+            $response->data     = null;
+            return $response;
+        }
     }
 }

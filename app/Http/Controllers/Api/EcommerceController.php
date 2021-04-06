@@ -841,47 +841,47 @@ class EcommerceController extends Controller
 
         if (setting('payment_baokim_status') == 1) {
 
-            $bpmList = app(BaoKimAPI::class)->getBankPaymentMethodList();
-            $bpmList = is_array($bpmList) ? collect($bpmList) : collect([]);
-            $types = collect([
-                [
-                    "type"      => 0,
-                    "title"     => "Thanh toán từ ví Bảo Kim",
-                    "image"     => "http://demo.baokim.vn/bkim/sercurity.png",
-                    "list"      => collect([])
-                ],
-                [
-                    "type"      => 1,
-                    "title"     => "Thẻ ATM online các ngân hàng",
-                    "image"     => "http://demo.baokim.vn/bkim/atm.png",
-                    "list"      => collect([])
-                ],
-                [
-                    "type"      => 2,
-                    "title"     => "Thẻ tín dụng",
-                    "image"     => "http://demo.baokim.vn/bkim/atm.png",
-                    "list"      => collect([])
-                ],                
-            ]);
+            // $bpmList = app(BaoKimAPI::class)->getBankPaymentMethodList();
+            // $bpmList = is_array($bpmList) ? collect($bpmList) : collect([]);
+            // $types = collect([
+            //     [
+            //         "type"      => 0,
+            //         "title"     => "Thanh toán từ ví Bảo Kim",
+            //         "image"     => "http://demo.baokim.vn/bkim/sercurity.png",
+            //         "list"      => collect([])
+            //     ],
+            //     [
+            //         "type"      => 1,
+            //         "title"     => "Thẻ ATM online các ngân hàng",
+            //         "image"     => "http://demo.baokim.vn/bkim/atm.png",
+            //         "list"      => collect([])
+            //     ],
+            //     [
+            //         "type"      => 2,
+            //         "title"     => "Thẻ tín dụng",
+            //         "image"     => "http://demo.baokim.vn/bkim/atm.png",
+            //         "list"      => collect([])
+            //     ],                
+            // ]);
 
-            $types =  $types->map(function($type) use ($bpmList) {
+            // $types =  $types->map(function($type) use ($bpmList) {
 
-                $list =  $bpmList->filter(function($value, $key) use ($type) {
-                    return $value->type == $type["type"];
-                })->all();
+            //     $list =  $bpmList->filter(function($value, $key) use ($type) {
+            //         return $value->type == $type["type"];
+            //     })->all();
 
-                $type["list"] = $type["list"]->merge($list)->all();
+            //     $type["list"] = $type["list"]->merge($list)->all();
 
-                return $type;
+            //     return $type;
 
-            });
+            // });
 
             $payment_method[] = [
                 "method"        => "baokim",
                 "label"         => setting('payment_baokim_name', trans('plugins/payment::payment.payment_via_baokim')),
                 "description"   => setting('payment_baokim_description'),
                 "is_default"    => setting('default_payment_method') == 'baokim',
-                "types"         => $types
+                // "types"         => $types
             ];
         }
 
@@ -1111,13 +1111,18 @@ class EcommerceController extends Controller
                     break;
             }
 
-            OrderHelper::processOrder($order->id, $paymentData['charge_id']);
-
             if ($paymentData['error']) {
                 return $response
                     ->setError()
                     ->setMessage($paymentData['message']);
             }
+
+            if ($request->input("payment_method") != BAOKIM_PAYMENT_METHOD_NAME) {
+                OrderHelper::processOrder($order->id, $paymentData['charge_id']);
+            }
+
+
+
 
             return $response
                 ->setData($paymentData)

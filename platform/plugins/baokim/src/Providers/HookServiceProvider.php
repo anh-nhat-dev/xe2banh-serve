@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 use Botble\BaoKim\BaoKimAPI;
 // use BaoKimSDK\BaoKim;
+use Botble\Base\Http\Responses\BaseHttpResponse;
 // use Mollie;
 use OrderHelper;
 // use Throwable;
@@ -86,15 +87,15 @@ class HookServiceProvider extends ServiceProvider
     {
         if ($request->input('payment_method') == BAOKIM_PAYMENT_METHOD_NAME) {
             $payload = array(
-                "mrc_order_id"          => time() . $request->input('order_id'),
+                "mrc_order_id"          => get_order_code($request->input('order_id')),
                 "total_amount"          => $request->input("amount"),
-                "description"           => 'Order #' . $request->input('order_id'),
+                "description"           => 'Thanh toán cho đơn hàng ' . get_order_code($request->input('order_id')),
                 "url_success"           => route("baokim.payment.callback", OrderHelper::getOrderSessionToken()),
                 "customer_email"        => $request->input('address.email'),
                 "customer_phone"        => $request->input('address.phone'),
                 "customer_name"         => $request->input('address.name'),
-                "customer_address"      => $request->input('address.address'),
-                "bpm_id"                => $request->input('bao_kim_bank')
+                "customer_address"      => $request->input('address.address')
+                // "bpm_id"                => $request->input('bao_kim_bank')
             );
 
             $response = app(BaoKimAPI::class)->sendOrder($payload);

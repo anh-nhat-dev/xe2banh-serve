@@ -44,6 +44,7 @@ class OrderHelper
             return false;
         }
 
+        $histories = $order->histories()->get();
         if ($order->histories()->where('action', 'create_order')->count()) {
             return false;
         }

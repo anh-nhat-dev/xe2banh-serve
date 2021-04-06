@@ -50,9 +50,9 @@ class OrderRequest extends Request
             $rules['address.name'] = 'required|min:3|max:120';
         }
 
-        if  ($this->input("payment_method") == "baokim") {
-            $rules['bao_kim_bank'] = 'required|numeric';
-        }
+        // if  ($this->input("payment_method") == "baokim") {
+        //     $rules['bao_kim_bank'] = 'required|numeric';
+        // }
 
         return $rules;
     }
