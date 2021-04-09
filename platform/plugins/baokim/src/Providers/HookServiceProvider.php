@@ -91,6 +91,7 @@ class HookServiceProvider extends ServiceProvider
                 "total_amount"          => $request->input("amount"),
                 "description"           => 'Thanh toán cho đơn hàng ' . get_order_code($request->input('order_id')),
                 "url_success"           => route("baokim.payment.callback", OrderHelper::getOrderSessionToken()),
+                "url_detail"            => route("baokim.payment.callback", OrderHelper::getOrderSessionToken()),
                 "customer_email"        => $request->input('address.email'),
                 "customer_phone"        => $request->input('address.phone'),
                 "customer_name"         => $request->input('address.name'),
