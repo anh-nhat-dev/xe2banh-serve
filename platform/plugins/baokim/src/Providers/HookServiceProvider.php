@@ -7,9 +7,9 @@ use Html;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 use Botble\BaoKim\BaoKimAPI;
-// use BaoKimSDK\BaoKim;
+use Botble\Payment\Repositories\Interfaces\PaymentInterface;
 use Botble\Base\Http\Responses\BaseHttpResponse;
-// use Mollie;
+use Botble\Payment\Enums\PaymentStatusEnum;
 use OrderHelper;
 // use Throwable;
 
@@ -21,7 +21,7 @@ class HookServiceProvider extends ServiceProvider
 
         add_filter(PAYMENT_FILTER_ADDITIONAL_PAYMENT_METHODS, [$this, 'registerBaokimMethod'], 60, 2);
         $this->app->booted(function () {
-            add_filter(PAYMENT_FILTER_AFTER_POST_CHECKOUT, [$this, 'checkoutWithMollie'], 17, 2);
+            add_filter(PAYMENT_FILTER_AFTER_POST_CHECKOUT, [$this, 'checkoutWithBaokim'], 17, 2);
         });
 
         add_filter(PAYMENT_METHODS_SETTINGS_PAGE, [$this, 'addPaymentSettings'], 99);
@@ -83,20 +83,22 @@ class HookServiceProvider extends ServiceProvider
      * @param Request $request
      * @param array $data
      */
-    public function checkoutWithMollie(array $data, Request $request)
+    public function checkoutWithBaokim(array $data, Request $request)
     {
         if ($request->input('payment_method') == BAOKIM_PAYMENT_METHOD_NAME) {
             $payload = array(
-                "mrc_order_id"          => get_order_code($request->input('order_id')),
-                "total_amount"          => $request->input("amount"),
+                "mrc_order_id"          => rand(5, 30) . get_order_code($request->input('order_id')),
+                "total_amount"          => config("plugins.baokim.baokim.account_confirm") == "no" ? 30000 : $request->input("amount"),
                 "description"           => 'Thanh toán cho đơn hàng ' . get_order_code($request->input('order_id')),
-                "url_success"           => route("baokim.payment.callback", OrderHelper::getOrderSessionToken()),
-                "url_detail"            => route("baokim.payment.callback", OrderHelper::getOrderSessionToken()),
+                "url_success"           => route("baokim.payment.callback", ["id" => OrderHelper::getOrderSessionToken(), "order_id" => $request->input('order_id')]),
+                "url_detail"            => route("baokim.payment.callback", ["id" => OrderHelper::getOrderSessionToken(), "order_id" => $request->input('order_id')]),
                 "customer_email"        => $request->input('address.email'),
                 "customer_phone"        => $request->input('address.phone'),
                 "customer_name"         => $request->input('address.name'),
-                "customer_address"      => $request->input('address.address')
-                // "bpm_id"                => $request->input('bao_kim_bank')
+                "customer_address"      => $request->input('address.address'). ','.$request->input('address.city') . ','. $request->input('address.state'),
+                "merchant_id"           => config('plugins.baokim.baokim.merchant_id'),
+                "bpm_id"                => $request->input('bpm_id'),
+                // "webhooks"              => route("baokim.payment.webhook", ["order_id" => $request->input('order_id')])
             );
 
             $response = app(BaoKimAPI::class)->sendOrder($payload);
@@ -108,6 +110,21 @@ class HookServiceProvider extends ServiceProvider
             $info["charge_id"]      = $response->data->order_id ?? null;
             $info["payment_url"]    = $response->data->payment_url ?? null;
 
+            if ($info["charge_id"]) {
+                $status = PaymentStatusEnum::PENDING;
+                app(PaymentInterface::class)->create([
+                    'amount'          => $payload["total_amount"],
+                    'currency'        => "VND",
+                    'charge_id'       => $info["charge_id"],
+                    'payment_channel' => BAOKIM_PAYMENT_METHOD_NAME,
+                    'status'          => $status,
+                    'order_id'        => $request->input('order_id'),
+                ]);
+
+                OrderHelper::processOrder($request->input('order_id'), $info["charge_id"]);
+            }
+            
+            
             return $info;
         }
 

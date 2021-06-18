@@ -5,64 +5,78 @@ class SEOHelperManagement {
 
     static updateSEOTitle(value) {
         if (value) {
-            if (!$('#seo_title').val()) {
-                $('.page-title-seo').text(value);
+            if (!$("#seo_title").val()) {
+                $(".page-title-seo").text(value);
             }
-            $('.default-seo-description').addClass('hidden');
-            $('.existed-seo-meta').removeClass('hidden');
+            $(".default-seo-description").addClass("hidden");
+            $(".existed-seo-meta").removeClass("hidden");
         } else {
-            $('.default-seo-description').removeClass('hidden');
-            $('.existed-seo-meta').addClass('hidden');
+            $(".default-seo-description").removeClass("hidden");
+            $(".existed-seo-meta").addClass("hidden");
         }
     }
 
     static updateSEODescription(value) {
         if (value) {
-            if (!$('#seo_description').val()) {
-                $('.page-description-seo').text(value);
+            value = unescape(value?.replace(/(<([^>]+)>)/gi, ""));
+            console.log(
+                "🚀 ~ file: seo-helper.js ~ line 22 ~ SEOHelperManagement ~ updateSEODescription ~ value",
+                value
+            );
+            if (!$("#seo_description").val()) {
+                $(".page-description-seo").text(value);
             }
         }
     }
 
     handleMetaBox() {
-        $('.page-url-seo p').text(this.$document.find('#sample-permalink a').prop('href').replace('?preview=true', ''));
-        this.$document.on('click', '.btn-trigger-show-seo-detail', event => {
+        $(".page-url-seo p").text(
+            this.$document
+                .find("#sample-permalink a")
+                .prop("href")
+                .replace("?preview=true", "")
+        );
+        this.$document.on("click", ".btn-trigger-show-seo-detail", event => {
             event.preventDefault();
-            $('.seo-edit-section').toggleClass('hidden');
+            $(".seo-edit-section").toggleClass("hidden");
         });
 
-        this.$document.on('keyup', 'input[name=name]', event => {
+        this.$document.on("keyup", "input[name=name]", event => {
             SEOHelperManagement.updateSEOTitle($(event.currentTarget).val());
         });
 
-        this.$document.on('keyup', 'input[name=title]', event => {
+        this.$document.on("keyup", "input[name=title]", event => {
             SEOHelperManagement.updateSEOTitle($(event.currentTarget).val());
         });
 
-        this.$document.on('keyup', 'textarea[name=description]', event => {
-            SEOHelperManagement.updateSEODescription($(event.currentTarget).val());
+        this.$document.on("keyup", "textarea[name=description]", event => {
+            SEOHelperManagement.updateSEODescription(
+                $(event.currentTarget).val()
+            );
         });
 
-        this.$document.on('keyup', '#seo_title', event => {
+        this.$document.on("keyup", "#seo_title", event => {
             if ($(event.currentTarget).val()) {
-                $('.page-title-seo').text($(event.currentTarget).val());
-                $('.default-seo-description').addClass('hidden');
-                $('.existed-seo-meta').removeClass('hidden');
+                $(".page-title-seo").text($(event.currentTarget).val());
+                $(".default-seo-description").addClass("hidden");
+                $(".existed-seo-meta").removeClass("hidden");
             } else {
-                let $inputName = $('input[name=name]');
+                let $inputName = $("input[name=name]");
                 if ($inputName.val()) {
-                    $('.page-title-seo').text($inputName.val());
+                    $(".page-title-seo").text($inputName.val());
                 } else {
-                    $('.page-title-seo').text($('input[name=title]').val());
+                    $(".page-title-seo").text($("input[name=title]").val());
                 }
             }
         });
 
-        this.$document.on('keyup', '#seo_description', event => {
+        this.$document.on("keyup", "#seo_description", event => {
             if ($(event.currentTarget).val()) {
-                $('.page-description-seo').text($(event.currentTarget).val());
+                $(".page-description-seo").text($(event.currentTarget).val());
             } else {
-                $('.page-description-seo').text($('textarea[name=description]').val());
+                $(".page-description-seo").text(
+                    $("textarea[name=description]").val()
+                );
             }
         });
     }

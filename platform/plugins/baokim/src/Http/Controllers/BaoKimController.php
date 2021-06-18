@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Botble\Payment\Enums\PaymentStatusEnum;
 use Botble\Payment\Services\Traits\PaymentTrait;
 use Botble\BaoKim\BaoKimAPI;
-use Illuminate\Support\Str;
+use Botble\Payment\Repositories\Interfaces\PaymentInterface;
 use Botble\Base\Http\Responses\BaseHttpResponse;
 use OrderHelper;
 
@@ -21,7 +21,8 @@ class BaoKimController extends BaseController
     public function paymentCallback($token, Request $request, BaseHttpResponse $response)
     {
         $checksum = $request->input('checksum');
-        $query = $request->except((["checksum", "your_param"]));
+        $orderId  = $request->input('order_id');
+        $query = $request->except((["checksum", "order_id"]));
         $verifyQuery = app(BaoKimAPI::class)->verifyQuery($query, $checksum);
         ksort($query);
 
@@ -29,20 +30,12 @@ class BaoKimController extends BaseController
             "_token" => $token
         ]);
 
-        if ($verifyQuery) {
-            $prefix = get_ecommerce_setting('store_order_prefix') ? get_ecommerce_setting('store_order_prefix') . '-' : '';
-            $suffix = get_ecommerce_setting('store_order_suffix') ? '-' . get_ecommerce_setting('store_order_suffix') : '';
-            $orderId    =   (int)Str::replaceFirst($suffix, "", Str::replaceFirst($prefix, "", Str::replaceFirst("#", "", $request->input('mrc_order_id')))) - (int)config('plugins.ecommerce.order.default_order_start_number');
+        if ($orderId && $verifyQuery) {
             $orderDetail = app(BaoKimAPI::class)->getOrderDetail($request->input('id'), $request->input('mrc_order_id'));
             $status = PaymentStatusEnum::PENDING;
 
             $data = $orderDetail->data;
-            // if ($orderDetail->error ||  $orderDetail->code != 0) return $response
-            //     ->setError()
-            //     ->setNextUrl(env('FE_SITE_URL', url('/')) . '/dat-hang-that-bai.html?' . $responseQuery);
-
-          
-
+    
             switch ($request->input("stat")) {
                 case "p":
                 case "r":
@@ -56,17 +49,15 @@ class BaoKimController extends BaseController
                     break;
             }
 
-            $this->storeLocalPayment([
-                'amount'          => $data->total_amount ?? $request->input("total_amount"),
-                'currency'        => "VND",
-                'charge_id'       => $data->id ?? $request->input("id"),
-                'payment_channel' => BAOKIM_PAYMENT_METHOD_NAME,
-                'status'          => $status,
-                'payment_type'    => $data->bpm_id ?? null,
-                'order_id'        => $orderId,
-            ]);
 
-            OrderHelper::processOrder($orderId, $request->input('id'));
+            app(PaymentInterface::class)->update(
+            [
+                'order_id'        => $orderId,
+                'charge_id'       => $data->id ?? $request->input("id")
+            ],
+            [
+                'status'          => $status,
+            ], );
 
             if ($request->input("stat") != "c") {
                 return $response
@@ -78,5 +69,14 @@ class BaoKimController extends BaseController
         }
         return $response
             ->setNextUrl(env('FE_SITE_URL', url('/')) . '/dat-hang-that-bai.html?' . $responseQuery);
+    }
+
+    /**
+     * 
+     */
+    public function webHook(Request $request, BaseHttpResponse $response){
+
+        $request;
+        return $response->setData(["err_code" => 0]);
     }
 }

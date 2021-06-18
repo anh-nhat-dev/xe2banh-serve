@@ -75,21 +75,41 @@
                             <label class="text-title-field" for="payment_{{ BAOKIM_PAYMENT_METHOD_NAME }}_description">{{ __('Description') }}</label>
                             <textarea class="next-input" name="payment_{{ BAOKIM_PAYMENT_METHOD_NAME }}_description" id="payment_{{ BAOKIM_PAYMENT_METHOD_NAME }}_description">{{ get_payment_setting('description', BAOKIM_PAYMENT_METHOD_NAME, __('Payment with Bảo kim')) }}</textarea>
                         </div>
-                        <p class="payment-note">
+                        {{-- <p class="payment-note">
                             {{ trans('plugins/payment::payment.please_provide_information') }} <a target="_blank" href="https://vnid.net/register?site=baokim">Mollie</a>:
-                        </p>
-                        <div class="form-group">
+                        </p> --}}
+                        {{-- <div class="form-group">
                             <label class="text-title-field" for="{{ BAOKIM_PAYMENT_METHOD_NAME }}_api_key">{{ __('API Key') }}</label>
-                            <input type="text" class="next-input"
+                            <input type="password" class="next-input"
                                    name="payment_{{ BAOKIM_PAYMENT_METHOD_NAME }}_api_key" id="{{ BAOKIM_PAYMENT_METHOD_NAME }}_api_key"
                                    value="{{ get_payment_setting('api_key', BAOKIM_PAYMENT_METHOD_NAME) }}">
-                        </div>
-                        <div class="form-group">
+                        </div> --}}
+                        {{-- <div class="form-group">
                             <label class="text-title-field" for="{{ BAOKIM_PAYMENT_METHOD_NAME }}_secret">{{ __('Secret') }}</label>
-                            <input type="text" class="next-input"
+                            <input type="password" class="next-input"
                                     name="payment_{{ BAOKIM_PAYMENT_METHOD_NAME }}_secret" id="{{ BAOKIM_PAYMENT_METHOD_NAME }}_secret"
                                     value="{{ get_payment_setting('secret', BAOKIM_PAYMENT_METHOD_NAME) }}">
+                        </div> --}}
+                        {{-- <div class="form-group">
+                            <label class="text-title-field" for="{{ BAOKIM_PAYMENT_METHOD_NAME }}_merchant_id">{{ __('Merchant ID') }}</label>
+                            <input type="text" class="next-input"
+                                    name="payment_{{ BAOKIM_PAYMENT_METHOD_NAME }}_merchant_id" id="{{ BAOKIM_PAYMENT_METHOD_NAME }}_merchant_id"
+                                    value="{{ get_payment_setting('merchant_id', BAOKIM_PAYMENT_METHOD_NAME) }}">
+                        </div> --}}
+                        {{-- <div class="form-group">
+                            <label class="text-title-field" for="{{ BAOKIM_PAYMENT_METHOD_NAME }}_endpoint">{{ __('URL') }}</label>
+                            <input type="text" class="next-input"
+                                    name="payment_{{ BAOKIM_PAYMENT_METHOD_NAME }}_endpoint" id="{{ BAOKIM_PAYMENT_METHOD_NAME }}_endpoint"
+                                    value="{{ get_payment_setting('endpoint', BAOKIM_PAYMENT_METHOD_NAME) }}">
+                        </div> --}}
+
+                        <div class="form-group">
+                            <label class="text-title-field" for="{{ BAOKIM_PAYMENT_METHOD_NAME }}_domain">{{ __('Domain') }}</label>
+                            <input type="text" class="next-input"
+                                    name="payment_{{ BAOKIM_PAYMENT_METHOD_NAME }}_domain" id="{{ BAOKIM_PAYMENT_METHOD_NAME }}_domain"
+                                    value="{{ get_payment_setting('domain', BAOKIM_PAYMENT_METHOD_NAME) }}">
                         </div>
+                        
                     </div>
                 </div>
             </div>

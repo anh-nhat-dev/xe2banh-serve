@@ -7,7 +7,7 @@ use Botble\Payment\Enums\PaymentMethodEnum;
 use Botble\Support\Http\Requests\Request;
 use Illuminate\Validation\Rule;
 
-class OrderRequest extends Request
+class VerifyInfoRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -19,7 +19,7 @@ class OrderRequest extends Request
         return true;
     }
 
-    /**
+     /**
      * Get the validation rules that apply to the request.
      *
      * @return array
@@ -28,7 +28,6 @@ class OrderRequest extends Request
     {
 
         $rules = [
-            'payment_method'  => 'required|' . Rule::in(PaymentMethodEnum::values()),
             'shipping_method' => 'required|' . Rule::in(ShippingMethodEnum::values()),
             'amount'          => 'required|min:0',
         ];
@@ -50,9 +49,9 @@ class OrderRequest extends Request
             $rules['address.name'] = 'required|min:3|max:120';
         }
 
-        if  ($this->input("payment_method") == "baokim") {
-            // $rules['bpm_id'] = 'required|numeric';
-        }
+        // if  ($this->input("payment_method") == "baokim") {
+        //     $rules['bao_kim_bank'] = 'required|numeric';
+        // }
 
         return $rules;
     }
@@ -70,7 +69,8 @@ class OrderRequest extends Request
             'address.state.required'   => __("Trường trạng thái là bắt buộc."),
             'address.city.required'    => __('Trường thành phố là bắt buộc.'),
             'address.address.required' => __('Trường địa chỉ là bắt buộc.'),
-            'bao_kim_bank.required'    => __("Bạn chưa chọn hình thức  thanh toán của Bảo Kim")
+            'bao_kim_bank.required'    => __("Bạn chưa chọn hình thức  thanh toán của Bảo Kim"),
+            "shipping_method.required" => __("Vui lòng chọn phương thức vận chuyển")
         ];
 
         return array_merge(parent::messages(), $messages);

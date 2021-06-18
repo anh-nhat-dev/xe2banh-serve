@@ -548,6 +548,10 @@ class EcommerceController extends Controller
                 return $response->setError(true);
             }
 
+            if ($request->input("type") == "installment") {
+                Cart::instance('cart')->destroy();
+            }
+
             $product = $this->productRepository->findById($request->id);
 
             if (!$product) {
@@ -1068,9 +1072,9 @@ class EcommerceController extends Controller
                     'options'      => [],
                 ];
 
-                if ($cartItem->options->extras) {
-                    $data['options'] = $cartItem->options->extras;
-                }
+                    if ($cartItem->options->extras) {
+                        $data['options'] = $cartItem->options->extras;
+                    }
 
                 $this->orderProductRepository->create($data);
 
@@ -1120,9 +1124,6 @@ class EcommerceController extends Controller
             if ($request->input("payment_method") != BAOKIM_PAYMENT_METHOD_NAME) {
                 OrderHelper::processOrder($order->id, $paymentData['charge_id']);
             }
-
-
-
 
             return $response
                 ->setData($paymentData)

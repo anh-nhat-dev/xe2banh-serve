@@ -48,4 +48,10 @@ Route::group(['namespace' => 'App\Http\Controllers\Api', 'middleware' => ['api']
     Route::get("/widget/{key}", "OtherApiController@getWidget");
     Route::get("/pages/{key}", "OtherApiController@getPageBySlug");
     Route::get("/products-by-ids", "EcommerceController@getProductsByIds");
+    Route::post("/check-info", 'OtherApiController@verifyInfo');
+    Route::get("/list-payment-method", 'OtherApiController@getListPayment');
+    Route::get("/calculate-fee", 'OtherApiController@calculateFee');
+    Route::post("/loan-package", 'OtherApiController@loanPackage');
+    Route::post("/check-bank-card", 'OtherApiController@checkBankCard');
+    Route::post("/create-order-temporary", "OtherApiController@createOrderTemporary");
 });

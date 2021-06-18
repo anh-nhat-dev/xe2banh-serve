@@ -145,6 +145,69 @@ class BaoKimAPI
         return $body->data ??  [];
     }
 
+    /**
+     * 
+     */
+    public function calculateFee(array $payload) {
+        $enpoint = $this->endpoint . '/api/v4/bpm/calculate-fee';
+
+        $options = array(
+            "query" => array_merge(
+                    $payload, 
+                    array(
+                    "jwt" => $this->getToken()
+                )
+            )
+           
+        );
+        return  $this->sendRequest($enpoint, $options, "GET");
+    }
+
+
+    /**
+     * 
+     */
+    public function loanPackage($body = []){
+        $endpoint = "https://pg.baokim.vn/installment/loan-package";
+
+        $options = array(
+            "form_params" => array_merge([
+                "domain" => "xedienvietthanh.com",
+                
+            ], $body)
+        );
+        return  $this->sendRequest($endpoint, $options, "POST");
+    }
+
+    /**
+     * 
+     */
+    public function checkBankCard($body = []){
+        $endpoint = "https://pg.baokim.vn/installment/post-check-bank-card";
+
+        $options = array(
+            "form_params" => $body
+        );
+
+        return  $this->sendRequest($endpoint, $options, "POST");
+    }
+
+    /**
+     * 
+     */
+    public function createOrderTemporary($body = []){
+        $endpoint = "https://ws.baokim.vn/payment-servicesapi/v1/order-temporary/store";
+
+        $options = array(
+            "form_params" => array_merge($body, array(
+                "domain"    =>  config('plugins.baokim.baokim.domain')
+            ))
+        );
+
+        return  $this->sendRequest($endpoint, $options, "POST");
+    }
+
+
 
     /**
      * 
@@ -163,4 +226,5 @@ class BaoKimAPI
             return $response;
         }
     }
+
 }
