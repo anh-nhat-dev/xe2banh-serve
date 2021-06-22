@@ -18,13 +18,9 @@ class SEOHelperManagement {
 
     static updateSEODescription(value) {
         if (value) {
-            value = unescape(value?.replace(/(<([^>]+)>)/gi, ""));
-            console.log(
-                "🚀 ~ file: seo-helper.js ~ line 22 ~ SEOHelperManagement ~ updateSEODescription ~ value",
-                value
-            );
+            value = value?.replace(/(<([^>]+)>)/gi, "");
             if (!$("#seo_description").val()) {
-                $(".page-description-seo").text(value);
+                $(".page-description-seo").html(value);
             }
         }
     }
