@@ -31,17 +31,19 @@ class ProductResource extends JsonResource
             "image"                 => RvMedia::getImageUrl($this->original_product->image, null, false),
             "front_sale_price"      => $this->front_sale_price,
             "promotions"            => $this->promotions,
-
-        ];
-
-        $advanced_response = [
+            "variations"            => VariationResource::collection($this->variations),
             "images" => collect($this->images)->map(function ($link) {
                 return RvMedia::getImageUrl($link, null, false);
             }),
+        ];
+
+        $advanced_response = [
+            // "images" => collect($this->images)->map(function ($link) {
+            //     return RvMedia::getImageUrl($link, null, false);
+            // }),
             "description" => $this->description,
             "content"   => $this->content,
             "productAttributeSets" => $this->productAttributeSets,
-            "variations" => VariationResource::collection($this->variations),
             "brand" => $this->brand,
             "average_star" => get_average_star_of_product($this->id),
             "total_reviewed" => get_count_reviewed_of_product($this->id),
