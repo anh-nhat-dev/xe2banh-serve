@@ -31,11 +31,11 @@ class HookServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        if (defined('MENU_ACTION_SIDEBAR_OPTIONS')) {
-            Menu::addMenuOptionModel(Brand::class);
-            Menu::addMenuOptionModel(ProductCategory::class);
-            add_action(MENU_ACTION_SIDEBAR_OPTIONS, [$this, 'registerMenuOptions'], 12);
-        }
+        // if (defined('MENU_ACTION_SIDEBAR_OPTIONS')) {
+        //     Menu::addMenuOptionModel(Brand::class);
+        //     Menu::addMenuOptionModel(ProductCategory::class);
+        //     add_action(MENU_ACTION_SIDEBAR_OPTIONS, [$this, 'registerMenuOptions'], 12);
+        // }
 
         add_filter(DASHBOARD_FILTER_ADMIN_LIST, [$this, 'registerDashboardWidgets'], 208, 2);
 
@@ -50,11 +50,11 @@ class HookServiceProvider extends ServiceProvider
             add_filter(DASHBOARD_FILTER_ADMIN_LIST, function ($widgets) {
                 foreach ($widgets as $key => $widget) {
                     if (in_array($key, [
-                            'widget_total_themes',
-                            'widget_total_users',
-                            'widget_total_plugins',
-                            'widget_total_pages',
-                        ]) && $widget['type'] == 'stats') {
+                        'widget_total_themes',
+                        'widget_total_users',
+                        'widget_total_plugins',
+                        'widget_total_pages',
+                    ]) && $widget['type'] == 'stats') {
                         Arr::forget($widgets, $key);
                     }
                 }
