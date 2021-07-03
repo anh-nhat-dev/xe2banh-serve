@@ -32,11 +32,11 @@ class HookServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if (defined('MENU_ACTION_SIDEBAR_OPTIONS')) {
-            Menu::addMenuOptionModel(Category::class);
-            Menu::addMenuOptionModel(Tag::class);
-            add_action(MENU_ACTION_SIDEBAR_OPTIONS, [$this, 'registerMenuOptions'], 2);
-        }
+        // if (defined('MENU_ACTION_SIDEBAR_OPTIONS')) {
+        //     Menu::addMenuOptionModel(Category::class);
+        //     Menu::addMenuOptionModel(Tag::class);
+        //     add_action(MENU_ACTION_SIDEBAR_OPTIONS, [$this, 'registerMenuOptions'], 2);
+        // }
         add_filter(DASHBOARD_FILTER_ADMIN_LIST, [$this, 'registerDashboardWidgets'], 21, 2);
         add_filter(BASE_FILTER_PUBLIC_SINGLE_DATA, [$this, 'handleSingleView'], 2);
         if (defined('PAGE_MODULE_SCREEN_NAME')) {
@@ -52,8 +52,10 @@ class HookServiceProvider extends ServiceProvider
 
         if (function_exists('add_shortcode')) {
             add_shortcode('blog-posts', trans('plugins/blog::base.short_code_name'), trans('plugins/blog::base.short_code_description'), [$this, 'renderBlogPosts']);
-            shortcode()->setAdminConfig('blog-posts',
-                view('plugins/blog::partials.posts-short-code-admin-config')->render());
+            shortcode()->setAdminConfig(
+                'blog-posts',
+                view('plugins/blog::partials.posts-short-code-admin-config')->render()
+            );
         }
 
         if (function_exists('theme_option')) {

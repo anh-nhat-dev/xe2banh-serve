@@ -17,9 +17,9 @@ class MenuForm extends FormAbstract
     public function buildForm()
     {
         Assets::addScriptsDirectly([
-                'vendor/core/packages/menu/libraries/jquery-nestable/jquery.nestable.js',
-                'vendor/core/packages/menu/js/menu.js',
-            ])
+            'vendor/core/packages/menu/libraries/jquery-nestable/jquery.nestable.js',
+            'vendor/core/packages/menu/js/menu.js',
+        ])
             ->addStylesDirectly([
                 'vendor/core/packages/menu/libraries/jquery-nestable/jquery.nestable.css',
                 'vendor/core/packages/menu/css/menu.css',
